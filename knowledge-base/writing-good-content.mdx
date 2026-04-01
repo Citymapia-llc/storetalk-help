@@ -1,0 +1,90 @@
+---
+title: "How to write a good knowledge base"
+description: "Format, structure, and sample content for accurate AI responses."
+---
+
+## File format
+
+Upload plain text (`.txt`) or Markdown (`.md`) files. Keep one topic per file — for example, one file for your product catalogue and a separate file for your return policy.
+
+## What to include and what to leave out
+
+<CardGroup cols={2}>
+  <Card title="Include" icon="check" color="#1a7f5a">
+    - Product names, descriptions, specs, and prices
+    - FAQs with clear question and answer pairs
+    - Return, refund, and shipping policies
+    - Working hours and contact details
+    - Bulk pricing and discount rules
+    - Delivery timelines and areas you serve
+    - Payment methods you accept
+  </Card>
+  <Card title="Leave out" icon="xmark" color="#e8294a">
+    - Prices you don't want the AI to quote
+    - Internal notes or staff-only information
+    - Confidential supplier or cost data
+    - Unconfirmed or draft policies
+  </Card>
+</CardGroup>
+
+## Tips for better AI responses
+
+- Write prices as **₹499** not "four ninety nine" — the AI reads exactly what you write
+- Include common ways customers phrase questions: "How much does it cost?", "What's the price?"
+- Update your KB whenever prices or policies change — outdated info leads to wrong answers
+- Keep sentences short and factual — avoid marketing fluff
+
+## Sample files
+
+<CodeGroup>
+```txt products.txt
+# Product Catalogue
+
+## NFC Business Card — Standard
+Price: ₹499 per card (minimum order: 10 cards)
+Material: PVC with NFC chip
+Features: Tap-to-share digital profile, works with all smartphones
+Delivery: 5–7 business days
+
+## NFC Business Card — Premium Metal
+Price: ₹1,299 per card (minimum order: 5 cards)
+Material: Stainless steel with NFC chip
+Features: Tap-to-share, scratch resistant, lifetime warranty
+Delivery: 7–10 business days
+
+## Bulk Discounts
+Orders above 50 cards: 15% off
+Orders above 100 cards: 25% off
+```
+
+```txt faq.txt
+# Frequently Asked Questions
+
+Q: How long does delivery take?
+A: Standard delivery takes 5–7 business days. Express (2–3 days) is available for ₹99 extra.
+
+Q: Do you offer cash on delivery?
+A: No, we accept UPI, cards, and net banking only.
+
+Q: Can I customise the card design?
+A: Yes — every card is fully customised with your name and digital profile link.
+
+Q: What if my card is damaged on delivery?
+A: We replace damaged cards for free. Send a photo within 7 days of delivery.
+```
+
+```txt returns.txt
+# Return & Refund Policy
+
+Returns accepted within 14 days of delivery.
+Product must be unused and in original packaging.
+Personalised cards cannot be returned unless damaged.
+
+Refunds are processed within 5–7 business days.
+Refund goes back to the original payment method.
+Shipping charges are non-refundable.
+
+To return: email returns@yourbusiness.com with your order number.
+We will arrange pickup within 24 hours.
+```
+</CodeGroup>

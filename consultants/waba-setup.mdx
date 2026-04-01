@@ -1,0 +1,80 @@
+---
+title: "WABA setup guide"
+description: "How to connect a client's WhatsApp Business Account, including Meta verification requirements."
+---
+
+StoreTalk uses Meta's WhatsApp Cloud API directly — the client owns their WhatsApp Business Account (WABA), not StoreTalk. This means you need to connect through the Embedded Signup flow.
+
+## Prerequisites
+
+Before starting, confirm the following:
+
+| Requirement | Details |
+|-------------|---------|
+| Facebook Business account | Must be the client's own account, not yours |
+| Phone number | Must **not** be registered on any WhatsApp (personal or Business) |
+| Meta Business Manager | Will be created or connected during signup |
+| Display name | The name that appears in WhatsApp — should match the business name |
+
+<Warning>
+  If the phone number is currently registered on WhatsApp (even personal), it must be deleted from WhatsApp first. The client will lose all existing chat history on that number. This cannot be undone.
+</Warning>
+
+## Running Embedded Signup
+
+<Steps>
+  <Step title="Open WhatsApp settings">
+    In the client's StoreTalk account, go to **Settings → WhatsApp** and click **Connect WhatsApp Number**.
+  </Step>
+  <Step title="Log in to Facebook">
+    The client must log in with their own Facebook account (not yours). Use their credentials.
+  </Step>
+  <Step title="Create or select a Business Portfolio">
+    If the client has an existing Meta Business Manager, select it. Otherwise, create a new one during this step.
+  </Step>
+  <Step title="Create a WhatsApp Business Account">
+    Create a new WABA under the client's Business Portfolio. Give it the client's business name.
+  </Step>
+  <Step title="Add the phone number">
+    Enter the phone number to register. Choose SMS or phone call for the verification code delivery.
+  </Step>
+  <Step title="Verify">
+    Enter the 6-digit verification code. The number is now registered and connected to StoreTalk.
+  </Step>
+</Steps>
+
+## After connection
+
+Once connected, the phone number appears in **Settings → WhatsApp** with a status of **Connected**.
+
+- The **phone number ID** and **WABA ID** are shown in the settings — note these for reference
+- The **display name** may show as "Pending Review" for up to 24 hours — this is normal
+- Meta may require **business verification** before allowing template message sending at scale
+
+## Business verification
+
+Meta requires business verification to:
+
+- Send marketing template messages beyond the daily limit
+- Increase the messaging tier (100 → 1,000 → 10,000 conversations/day)
+
+To verify, the client must complete verification in their **Meta Business Manager → Business Settings → Business Info**. Acceptable documents:
+- GST registration certificate
+- Certificate of incorporation
+- Bank statement with business name
+- Utility bill with business address
+
+Verification typically takes 2–5 business days.
+
+<Tip>
+  Encourage clients to start the verification process on day one, even if they don't need high volume yet. It's much easier to do proactively than reactively when they hit a limit mid-campaign.
+</Tip>
+
+## Common issues
+
+| Issue | Likely cause | Fix |
+|-------|-------------|-----|
+| "Phone number already in use" | Number is still on WhatsApp | Delete the WhatsApp account on the device first |
+| Display name rejected | Name doesn't match the business page or is too generic | Use the full registered business name |
+| Signup stuck on Facebook login | Browser pop-up blocked | Allow pop-ups for app.storetalk.app in the browser |
+| OTP not received | Carrier issue with SMS | Switch to "phone call" verification method |

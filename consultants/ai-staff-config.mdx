@@ -1,0 +1,113 @@
+---
+title: "Advanced AI staff configuration"
+description: "Go beyond the basics — persona tuning, knowledge base structure, and escalation logic."
+---
+
+This guide covers advanced configuration techniques for consultants who want to squeeze the best performance out of StoreTalk's AI staff.
+
+## Knowledge base structure for accuracy
+
+The single biggest factor in AI response quality is knowledge base structure. Here are the patterns that work best:
+
+### Hierarchical headings
+
+Use `#` and `##` headings to group content. The AI uses headings as context anchors — it knows that "Price: ₹499" refers to the product listed in the heading above it.
+
+```txt
+# Product: Wooden Study Table
+
+## Dimensions
+Width: 120 cm | Depth: 60 cm | Height: 75 cm
+
+## Pricing
+Standard finish: ₹8,999
+Premium finish (walnut): ₹11,999
+Custom size (add ₹2,000 to base price)
+
+## Delivery
+Delhi NCR: 3–5 business days (free)
+Other cities: 7–10 business days (₹499 shipping)
+```
+
+### Q&A format for FAQs
+
+Write FAQs exactly as customers ask them. The AI matches customer questions against the question text in your KB.
+
+```txt
+Q: Can I get the table in a custom colour?
+A: Yes — we offer custom RAL colour finishes for an additional ₹1,500. Contact us for samples.
+
+Q: Do you offer EMI?
+A: Yes — 0% EMI on all orders above ₹5,000 using HDFC or ICICI credit cards.
+```
+
+### Explicit negative rules
+
+If there are things the AI should never say (e.g. a discontinued product, a price you're renegotiating), add explicit exclusion notes:
+
+```txt
+## Discontinued products (do not quote these)
+- Plastic Chair Model PC-100: discontinued as of March 2025, do not offer or quote
+- Budget Desk Model BD-50: out of stock indefinitely, redirect to Model BD-60
+```
+
+## Persona tuning via Dos & Don'ts
+
+The Dos & Don'ts field is the most powerful lever for shaping AI personality and behaviour. Use it to:
+
+**Set the communication style:**
+```
+Do: Use simple, friendly language. Avoid jargon.
+Do: Use short paragraphs — 2–3 sentences maximum per reply.
+Do: Address the customer by their first name if you know it.
+```
+
+**Set hard business rules:**
+```
+Don't: Offer any discount not listed in the knowledge base.
+Don't: Confirm stock availability — say "subject to availability" instead.
+Don't: Quote delivery dates — say "typically X days" instead.
+```
+
+**Set escalation triggers:**
+```
+Do: If the customer asks for a bulk order above 20 units, collect their name and requirement and say our sales team will call them.
+Do: Escalate to a human if the customer expresses frustration or uses the word "complaint".
+```
+
+## Escalation logic
+
+AI staff escalates to human when:
+
+1. The customer explicitly asks for a human
+2. The AI's confidence is below the threshold (usually after 2–3 failed answer attempts)
+3. A custom escalation rule in Dos & Don'ts is triggered
+
+### Reducing false escalations
+
+If the AI escalates too often, the knowledge base content is likely too thin or too vague. Before adjusting escalation settings, first:
+
+1. Check the **Inbox** for recent escalated conversations
+2. Read what question triggered the escalation
+3. Add a direct answer for that question to the knowledge base
+4. Re-test
+
+### Reducing missed escalations
+
+If the AI is confidently answering questions it shouldn't (e.g. confirming prices that aren't in the KB), add explicit Don'ts:
+
+```
+Don't: If you're not certain of a price from the knowledge base, say "Let me get that confirmed for you" and escalate to a human.
+```
+
+## Multi-staff routing
+
+When a client has multiple AI staff members, StoreTalk's orchestrator (StoreAgent) routes each incoming message to the most relevant specialist. To make routing work well:
+
+- Give each staff member a **distinct, narrow scope** — a Sales Executive should not also know return policies
+- Use clear, specific knowledge base files — one file per topic, not one large file for everything
+- Set the staff member's **language** explicitly — if you have a Hindi-only staff member for regional customers, set it to Hindi
+
+<Tip>
+  Always run at least 20 test messages after a new setup before handing over to the client. Cover edge cases: questions the AI shouldn't answer, requests for discounts, complaints, and multi-part questions.
+</Tip>

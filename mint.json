@@ -1,0 +1,134 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "StoreTalk Help",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#1a7f5a",
+    "light": "#22a874",
+    "dark": "#145f44",
+    "anchors": {
+      "from": "#1a7f5a",
+      "to": "#145f44"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Open StoreTalk",
+      "url": "https://app.storetalk.app"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Start Free Trial",
+    "url": "https://storetalk.app"
+  },
+  "tabs": [
+    {
+      "name": "Store Owners",
+      "url": "/"
+    },
+    {
+      "name": "Consultants",
+      "url": "/consultants"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "WhatsApp Us",
+      "icon": "whatsapp",
+      "url": "https://wa.me/message/storetalk"
+    },
+    {
+      "name": "storetalk.app",
+      "icon": "globe",
+      "url": "https://storetalk.app"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Welcome",
+      "pages": [
+        "introduction"
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started/quick-start"
+      ]
+    },
+    {
+      "group": "Knowledge Base",
+      "pages": [
+        "knowledge-base/writing-good-content",
+        "knowledge-base/kb-per-staff"
+      ]
+    },
+    {
+      "group": "AI Staff",
+      "pages": [
+        "ai-staff/getting-started",
+        "ai-staff/understanding-limitations",
+        "ai-staff/dos-and-donts"
+      ]
+    },
+    {
+      "group": "Inbox",
+      "pages": [
+        "inbox/human-handoff"
+      ]
+    },
+    {
+      "group": "Contacts & CRM",
+      "pages": [
+        "contacts/contacts-intro",
+        "contacts/import-contacts",
+        "contacts/segments-guide"
+      ]
+    },
+    {
+      "group": "Sales Pipeline",
+      "pages": [
+        "pipeline/pipeline-guide"
+      ]
+    },
+    {
+      "group": "Campaigns",
+      "pages": [
+        "campaigns/campaigns-intro",
+        "campaigns/campaign-results"
+      ]
+    },
+    {
+      "group": "Team & Roles",
+      "pages": [
+        "team/team-roles",
+        "team/invite-team",
+        "team/accept-invite",
+        "team/your-profile",
+        "team/manage-team"
+      ]
+    },
+    {
+      "group": "Billing",
+      "pages": [
+        "billing/plans"
+      ]
+    },
+    {
+      "group": "Consultant Guide",
+      "pages": [
+        "consultants/overview",
+        "consultants/onboarding-checklist",
+        "consultants/waba-setup",
+        "consultants/ai-staff-config"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "website": "https://storetalk.app"
+  }
+}

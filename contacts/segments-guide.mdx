@@ -1,0 +1,58 @@
+---
+title: "Grouping contacts with Segments"
+description: "Create targeted lists to send the right message to the right people."
+---
+
+A Segment is a saved group of contacts. When you send a Campaign, you pick a Segment as the audience. There are two types: **Static** and **Dynamic**.
+
+## Static vs Dynamic
+
+```
+STATIC SEGMENT                DYNAMIC SEGMENT
+─────────────────             ───────────────────────
+You hand-pick                 StoreTalk automatically
+the contacts                  picks contacts that match
+                              your rules
+
+Example:                      Example:
+"VIP customers for            "All contacts tagged
+ Diwali offer"                 'Wholesale' who opted in"
+
+✓ Fixed list                  ✓ Always up to date
+✓ Full control                ✓ Grows as new contacts
+✗ Must update manually          match your rules
+```
+
+## Creating a Static Segment
+
+<Steps>
+  <Step title="Go to Segments">Click **Segments** in the left menu.</Step>
+  <Step title="New Segment">Click **New Segment** and choose **Static** type.</Step>
+  <Step title="Name it">Give the segment a name (e.g. "Diwali VIP List").</Step>
+  <Step title="Add contacts">Search and add individual contacts to the list.</Step>
+  <Step title="Save">Save — you can add or remove contacts any time.</Step>
+</Steps>
+
+## Creating a Dynamic Segment
+
+<Steps>
+  <Step title="New Segment">Click **New Segment** and choose **Dynamic** type.</Step>
+  <Step title="Add rules">Add rules — for example: Tag equals "Wholesale".</Step>
+  <Step title="Narrow it down">Add more rules (e.g. Opted in = Yes) to refine the audience.</Step>
+  <Step title="Save">Save — StoreTalk recalculates the list every time you use the segment.</Step>
+</Steps>
+
+<Tip>
+  Dynamic segments are great for ongoing campaigns. Create one called "Active customers" and it will always include your latest contacts automatically.
+</Tip>
+
+## Dynamic segment rules
+
+| Rule | What it filters |
+|------|----------------|
+| Tag equals | Contacts with a specific tag |
+| Source equals | Where the contact came from (WhatsApp / Imported / Manual) |
+| Opted in | Only contacts who have not unsubscribed |
+| Has email | Contacts where an email address is saved |
+| Created after/before | Contacts added after or before a date |
+| Name contains | Contacts whose name includes a specific word |

@@ -1,0 +1,40 @@
+---
+title: "Team roles explained"
+description: "What each role can see and do in StoreTalk."
+---
+
+Every team member has a role that controls which parts of StoreTalk they can access. There are four roles: **Owner**, **Admin**, **Manager**, and **Agent**.
+
+## Role overview
+
+| Role | Who it is for | What they can access |
+|------|--------------|----------------------|
+| Owner | The business owner — one per account | Everything, including billing, WhatsApp settings, and team management |
+| Admin | A trusted manager or operations lead | Everything except billing and WhatsApp number settings |
+| Manager | A team lead who handles customers and pipeline | Inbox, Contacts, Segments, and Pipeline — no templates or campaigns |
+| Agent | A customer support or sales executive | Inbox, Dashboard, and Help only |
+
+<Tip>
+  Start new hires as Agent and promote them to Manager or Admin as they get familiar with the platform.
+</Tip>
+
+<Warning>
+  Only the Owner can change WhatsApp settings, manage billing, or invite Admins. There can only be one Owner per account.
+</Warning>
+
+## Sidebar access by role
+
+```
+Dashboard      ✓ Owner  ✓ Admin  ✓ Manager  ✓ Agent
+Inbox          ✓ Owner  ✓ Admin  ✓ Manager  ✓ Agent
+Contacts       ✓ Owner  ✓ Admin  ✓ Manager  ✗ Agent
+Segments       ✓ Owner  ✓ Admin  ✓ Manager  ✗ Agent
+Pipeline       ✓ Owner  ✓ Admin  ✓ Manager  ✗ Agent
+Templates      ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+Flows          ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+Campaigns      ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+AI Agents      ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+Knowledge Base ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+Settings       ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
+Help           ✓ Owner  ✓ Admin  ✓ Manager  ✓ Agent
+```
