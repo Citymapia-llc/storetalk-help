@@ -1,13 +1,12 @@
 <svg width="260" height="48" viewBox="0 0 260 48" xmlns="http://www.w3.org/2000/svg">
-  <path d="M0,8 Q0,0 8,0 L44,0 Q52,0 52,8 L52,34 Q52,42 44,42 L30,42 L26,48 L22,42 L8,42 Q0,42 0,34 Z"
-        fill="none" stroke="white" stroke-width="2" opacity="0.7"/>
+  <path d="M0,8 Q0,0 8,0 L44,0 Q52,0 52,8 L52,34 Q52,42 44,42 L30,42 L26,48 L22,42 L8,42 Q0,42 0,34 Z" fill="none" stroke="white" stroke-width="2" opacity="0.7"/>
   <ellipse cx="18" cy="20" rx="5.5" ry="5.5" fill="white"/>
   <ellipse cx="34" cy="20" rx="5.5" ry="5.5" fill="#e8294a"/>
   <circle cx="18" cy="20" r="1.8" fill="#111"/>
   <circle cx="34" cy="20" r="1.8" fill="white"/>
   <path d="M15,30 Q26,37 37,30" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
   <circle cx="37" cy="30" r="1.6" fill="#e8294a"/>
-  <text x="62" y="32" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="26" letter-spacing="-0.5">
-    <tspan font-weight="700" fill="white">Store</tspan><tspan font-weight="300" fill="white" fill-opacity="0.85">Talk</tspan>
+  <text x="62" y="32" font-family="Helvetica Neue,Helvetica,Arial,sans-serif" font-size="26" letter-spacing="-0.5">
+    <tspan font-weight="700" fill="white">Store</tspan><tspan font-weight="300" fill="white" opacity="0.85">Talk</tspan>
   </text>
 </svg>
