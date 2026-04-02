@@ -2,10 +2,10 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "StoreTalk Help",
   "logo": {
-    "dark": "/logo/storetalk-dark.svg",
-    "light": "/logo/storetalk-light.svg"
+    "dark": "https://media.storetalk.app/help/storetalk-dark.svg",
+    "light": "https://media.storetalk.app/help/storetalk-light.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "https://media.storetalk.app/help/favicon.svg",
   "colors": {
     "primary": "#1a7f5a",
     "light": "#22a874",
