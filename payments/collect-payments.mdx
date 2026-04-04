@@ -1,0 +1,189 @@
+---
+title: "Collect payments in chatbot flows"
+description: "Accept payments from customers directly inside a WhatsApp chatbot flow using Razorpay."
+---
+
+StoreTalk lets you collect payments inside any chatbot flow. When a customer reaches a payment step, they receive a **Pay now** button that opens a secure Razorpay checkout. Once they pay, the flow continues automatically.
+
+## How it works
+
+```
+Customer reaches payment node
+        ↓
+StoreTalk creates a Razorpay payment link
+        ↓
+Customer receives a WhatsApp message with a Pay button
+        ↓
+Customer taps the button → pays on Razorpay
+        ↓
+Razorpay notifies StoreTalk via webhook
+        ↓
+Flow resumes → success or failure path
+```
+
+---
+
+## Setting up Razorpay
+
+Before you can use payment nodes in your flows, connect your Razorpay account.
+
+<Steps>
+  <Step title="Go to Settings → Payments">
+    Open **Settings** in the left sidebar, then click the **Payments** tab.
+  </Step>
+  <Step title="Enter your Razorpay credentials">
+    You need three values from your [Razorpay Dashboard](https://dashboard.razorpay.com):
+
+    - **Key ID** — starts with `rzp_live_...`
+    - **Key Secret** — shown once when you generate a new key pair
+    - **Webhook Secret** — created when you set up the webhook endpoint
+  </Step>
+  <Step title="Set up the webhook in Razorpay">
+    Copy the **Webhook URL** shown on the settings page and add it in your Razorpay Dashboard under **Settings → Webhooks → Add New Webhook**.
+
+    Enable these two events:
+    - `payment_link.paid`
+    - `payment_link.expired`
+  </Step>
+  <Step title="Test the connection">
+    Click **Test Connection** to verify your credentials are valid. A green checkmark means you are ready to go.
+  </Step>
+  <Step title="Enable payments">
+    Toggle **Enable payment collection** on and click **Save**.
+  </Step>
+</Steps>
+
+<Warning>
+  If your Key ID starts with `rzp_test_`, you are in Razorpay test mode. Test payments will work for testing your flow, but real customers cannot pay. Switch to live keys before going live.
+</Warning>
+
+---
+
+## Adding a payment node to a flow
+
+<Steps>
+  <Step title="Open the Flow Builder">
+    Go to **Flows** in the sidebar and open the flow you want to edit.
+  </Step>
+  <Step title="Add a Payment Link node">
+    Drag a **Payment Link** node onto the canvas from the node palette.
+  </Step>
+  <Step title="Configure the node">
+    Fill in the required fields:
+
+    | Field | Required | Description |
+    |-------|----------|-------------|
+    | **Amount** | Yes | Payment amount in rupees. Supports placeholders. |
+    | **Description** | Yes | Shown on the Razorpay checkout page. Supports placeholders. Max 255 characters. |
+    | **Button label** | No | Text on the WhatsApp button. Default: "Pay now". Max 20 characters. |
+    | **Expiry (minutes)** | No | How long the link stays active. Default: 30 minutes. |
+    | **Success message** | No | Text sent to the customer after a successful payment. |
+    | **Failure message** | No | Text sent to the customer if the link expires without payment. |
+  </Step>
+  <Step title="Connect the success and failure paths">
+    The payment node has two output handles:
+
+    - **Success** — flow continues here after the customer pays
+    - **Failure** — flow continues here if the payment link expires
+
+    Connect each handle to the next node in your flow.
+  </Step>
+</Steps>
+
+---
+
+## Available placeholders
+
+Use placeholders in any flow node to insert dynamic values. Wrap them in double curly braces.
+
+### Customer and store info
+
+| Placeholder | Value |
+|-------------|-------|
+| `{{customer.name}}` | Customer's WhatsApp profile name |
+| `{{tenant.name}}` | Your store / business name |
+
+### Payment info (available after payment)
+
+These are automatically filled after the customer completes (or fails) a payment. Use them in nodes that come **after** the payment node.
+
+| Placeholder | Value | Example |
+|-------------|-------|---------|
+| `{{payment.amount}}` | Amount paid in rupees | `499.00` |
+| `{{payment.payment_id}}` | Razorpay payment ID | `pay_Q1a2b3c4d5` |
+| `{{payment.date}}` | Payment date (IST) | `3 Apr 2026` |
+| `{{payment.status}}` | Payment outcome | `paid` or `expired` |
+| `{{payment.link_id}}` | Razorpay payment link ID | `plink_X9y8z7` |
+
+### Using placeholders in the payment node
+
+The **Amount** and **Description** fields support placeholders too. This is useful when the payment amount comes from an earlier step in the flow.
+
+**Example:** If a previous form node captures the order total in a variable called `form.total`, set the amount to:
+
+```
+{{form.total}}
+```
+
+And the description to:
+
+```
+Payment for order from {{tenant.name}}
+```
+
+---
+
+## Example flow
+
+Here is a simple order-and-pay flow:
+
+```
+Ask Question: "What would you like to order?"
+        ↓
+Send Message: "Great! Your total is ₹{{form.total}}"
+        ↓
+Payment Link:
+  Amount = {{form.total}}
+  Description = "Order payment — {{tenant.name}}"
+        ↓ success                    ↓ failure
+Send Message:                   Send Message:
+"Thank you, {{customer.name}}!  "Your payment link expired.
+ Payment of ₹{{payment.amount}} Type 'pay' to try again."
+ received ({{payment.payment_id}})"
+```
+
+---
+
+## Payment activity log
+
+Track every payment event in **Settings → Payments → Activity**. The activity log shows:
+
+- When a payment webhook was received
+- Whether it matched an active flow session
+- The amount, payment link ID, and outcome
+- Any errors (e.g. signature verification failures)
+
+<Tip>
+  If a customer pays after the flow session has already ended (e.g. they came back later), StoreTalk still sends them the success message so they know their payment went through.
+</Tip>
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Payment node says "payments not enabled" | Go to **Settings → Payments** and toggle payments on |
+| Customer never receives the Pay button | Check that your Razorpay credentials are correct — use **Test Connection** |
+| Payment succeeds but flow does not continue | Verify the webhook URL is correctly set in your Razorpay Dashboard and both events (`payment_link.paid`, `payment_link.expired`) are enabled |
+| Signature verification failed in activity log | Re-copy the **Webhook Secret** from Razorpay and update it in StoreTalk settings |
+| Amount shows as 0 or errors | Make sure the Amount field resolves to a positive number — check your placeholder variable is set in a previous node |
+
+<CardGroup cols={2}>
+  <Card title="Plans and usage limits" icon="credit-card" href="/billing/plans">
+    See what's included in each StoreTalk plan.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Learn how to create your first WhatsApp chatbot flow.
+  </Card>
+</CardGroup>

@@ -113,6 +113,12 @@
       ]
     },
     {
+      "group": "Payments",
+      "pages": [
+        "payments/collect-payments"
+      ]
+    },
+    {
       "group": "Billing",
       "pages": [
         "billing/plans"
