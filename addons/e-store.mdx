@@ -1,0 +1,123 @@
+---
+title: "E-Store Addon"
+description: "Full online store experience — browse, cart, pay — entirely over WhatsApp"
+---
+
+The **StoreTalk E-Store** addon turns your WhatsApp number into a complete online store. Customers browse products, add items to cart, and pay — all without leaving the chat.
+
+## What it does
+
+When a customer triggers your store flow, they receive a WhatsApp button that opens your product catalogue. They browse, select items, choose quantities, and check out. The addon handles the entire shopping experience and returns the order details back to your flow for payment and confirmation.
+
+## Features
+
+- Browse product categories inside WhatsApp
+- Add items to cart with quantity management
+- Choose delivery slot and collect delivery address
+- Integrated Razorpay payment at checkout
+- Real-time inventory sync — out-of-stock items handled automatically
+- Order confirmation and status updates via WhatsApp
+
+## How it works in a flow
+
+```
+Customer sends keyword (e.g. "shop")
+        ↓
+Flow starts → reaches E-Store addon node
+        ↓
+Customer receives "Open Store" button on WhatsApp
+        ↓
+Customer taps button → browses products → places order
+        ↓
+Flow receives order details:
+  • order_id — unique order reference
+  • order_total — total amount in rupees
+  • order_summary — list of items ordered
+  • item_count — number of items
+        ↓
+Flow continues to payment node (Razorpay)
+        ↓
+Customer pays → order confirmed
+```
+
+## Setting up
+
+<Steps>
+  <Step title="Install the addon">
+    Go to **Addons → Marketplace**, find **StoreTalk E-Store**, and click **Install**. Give the instance a name that describes the store (e.g. "Grocery Store" or "Electronics Shop").
+  </Step>
+  <Step title="Configure your products">
+    Click **Open Dashboard** on the addon's Dashboard tab. This opens the E-Store admin panel where you manage your product catalogue — categories, products, prices, images, and inventory.
+  </Step>
+  <Step title="Create a flow">
+    In the **Flow Builder**, create a new flow with a keyword trigger (e.g. "shop" or "order"). Add an **Addon** node and select your E-Store instance. Set the action to `open_shop`.
+  </Step>
+  <Step title="Add a payment node">
+    After the addon node, add a **Payment Link** node. Set the amount to `{{order_total}}` and description to `Order {{order_id}}`. This creates a Razorpay payment link automatically.
+  </Step>
+  <Step title="Add confirmation message">
+    After the payment success path, add a **Send Message** node with your order confirmation. Use variables like `{{order_summary}}` and `{{order_id}}` to personalise it.
+  </Step>
+  <Step title="Publish the flow">
+    Click **Publish** to make the flow live. Customers can now trigger it by sending the keyword to your WhatsApp number.
+  </Step>
+</Steps>
+
+## Multiple stores
+
+You can install the E-Store addon more than once to run separate stores from the same WhatsApp number. For example:
+
+- **"Grocery Store"** — everyday essentials with a "grocery" keyword
+- **"Weekend Specials"** — limited-time offers with a "specials" keyword
+
+Each instance has its own product catalogue, inventory, and dashboard. Assign each to a different flow with a different trigger keyword.
+
+## Flow variables
+
+The addon returns these variables after a customer completes an order. Use them in downstream flow nodes with `{{variable_name}}` syntax.
+
+| Variable | Example | Description |
+|---|---|---|
+| `order_id` | `ORD-56042` | Unique order reference |
+| `order_total` | `255` | Total amount in rupees |
+| `order_summary` | `2× Basmati Rice ₹120, 1× Toor Dal ₹80` | Human-readable item list |
+| `item_count` | `3` | Number of items in the order |
+
+## Example confirmation message
+
+```
+Order Confirmed! ✅
+
+{{order_summary}}
+
+Total: ₹{{order_total}}
+Order ID: {{order_id}}
+
+Your order will be delivered within 2-3 hours.
+```
+
+## Dashboard
+
+Each E-Store instance has an admin dashboard accessible via **Open Dashboard** on the addon's Dashboard tab. From there you can:
+
+- Add, edit, and remove products
+- Organise products into categories
+- Set prices and manage inventory
+- View order history
+- Configure delivery slots and addresses
+
+## Pricing
+
+The E-Store addon is **free** for all StoreTalk plans. Standard Razorpay transaction fees apply for payments processed through the checkout.
+
+<CardGroup cols={2}>
+  <Card title="Addons overview" icon="puzzle-piece" href="/addons/addons-intro">
+    Learn how addons work and how to find them.
+  </Card>
+  <Card title="Managing addons" icon="gear" href="/addons/manage-addons">
+    Install, configure, and monitor your addons.
+  </Card>
+  <Card title="Building addons" icon="code" href="/addons/building-addons">
+    Developer guide for building new addons.
+  </Card>
+</CardGroup>

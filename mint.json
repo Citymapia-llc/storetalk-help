@@ -117,6 +117,7 @@
       "pages": [
         "addons/addons-intro",
         "addons/manage-addons",
+        "addons/e-store",
         "addons/building-addons"
       ]
     },
