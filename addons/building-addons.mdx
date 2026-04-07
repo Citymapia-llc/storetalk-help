@@ -1,0 +1,443 @@
+---
+title: "Building Addons — Developer Guide"
+description: "Complete technical reference for building a StoreTalk addon from scratch"
+---
+
+This guide covers everything you need to build an addon that integrates with StoreTalk's chatbot flow engine. Your addon receives webhook calls from StoreTalk, presents a web UI to the customer, and posts results back.
+
+## Architecture overview
+
+```
+┌──────────────┐       webhook        ┌──────────────┐
+│  StoreTalk   │ ───────────────────→ │  Your Addon  │
+│  Flow Engine │                      │   Server     │
+│              │ ←─────────────────── │              │
+│              │      callback        │              │
+└──────────────┘                      └──────────────┘
+        ↕                                    ↕
+   WhatsApp API                        Your Web UI
+   (sends CTA button                  (customer browses,
+    to customer)                       places order, etc.)
+```
+
+1. Customer triggers a flow → reaches an **Addon node**
+2. StoreTalk calls your addon's webhook with `session.create`
+3. Your addon returns a **session URL** (your web UI)
+4. StoreTalk sends the URL as a WhatsApp button to the customer
+5. Customer completes the action in your web UI
+6. Your addon calls StoreTalk's **callback URL** with `session.complete`
+7. Flow resumes with the variables you return
+
+---
+
+## Webhook contract
+
+All communication uses **HMAC-SHA256 signed** HTTP POST requests with **snake_case** JSON payloads.
+
+### Headers
+
+**StoreTalk → Your Addon:**
+
+| Header | Description |
+|---|---|
+| `X-StoreTalk-Signature` | `sha256=<hex digest>` — HMAC of the raw body |
+| `X-StoreTalk-Event` | Event type: `session.create`, `install`, etc. |
+| `X-StoreTalk-Delivery` | Unique delivery UUID |
+| `X-StoreTalk-Timestamp` | Unix epoch seconds (check within 5 minutes) |
+
+**Your Addon → StoreTalk:**
+
+| Header | Description |
+|---|---|
+| `X-Addon-Signature` | `sha256=<hex digest>` — HMAC of the raw body |
+| `X-Addon-Id` | Your addon's slug |
+
+---
+
+## Events
+
+### session.create (StoreTalk → Addon)
+
+Sent when a flow reaches your addon node. **You must respond within 5 seconds.**
+
+**Endpoint:** `POST {your_webhook_url}/events`
+
+**Request payload:**
+
+```json
+{
+  "event": "session.create",
+  "addon_id": "your-slug",
+  "timestamp": "2026-04-06T10:30:00Z",
+  "tenant_id": "uuid",
+  "install_id": "uuid",
+  "action": "open_shop",
+  "delivery_id": "uuid",
+  "callback_url": "https://api.storetalk.app/api/addons/callback/{delivery_id}",
+  "session_ttl_seconds": 1800,
+  "customer": {
+    "phone": "+919876543210",
+    "name": "Rahul"
+  },
+  "conversation_id": "uuid",
+  "input": {
+    "category": "groceries"
+  }
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `event` | string | Always `"session.create"` |
+| `addon_id` | string | Your addon slug |
+| `tenant_id` | UUID | StoreTalk tenant that installed your addon |
+| `install_id` | UUID | Specific installation (TenantAddon ID) |
+| `action` | string | Action name from your actions manifest |
+| `delivery_id` | UUID | Unique ID — use for idempotency and callback |
+| `callback_url` | string | Where to POST session.complete when done |
+| `session_ttl_seconds` | int | Session timeout (usually 1800 = 30 min) |
+| `customer.phone` | string | Customer's WhatsApp number |
+| `customer.name` | string? | Customer name if known |
+| `conversation_id` | UUID | StoreTalk conversation ID |
+| `input` | object? | Flow-configured input payload (nullable) |
+
+**Expected response:**
+
+```json
+{
+  "status": "success",
+  "session": {
+    "url": "https://your-addon.com/shop/s/abc123",
+    "expires_in_seconds": 1800,
+    "session_id": "your-internal-id"
+  },
+  "message": {
+    "body": "Browse our store and add items to your cart!",
+    "button_text": "Open Store"
+  }
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `status` | Yes | `"success"` or `"error"` |
+| `session.url` | Yes | Customer-facing URL (include auth token) |
+| `session.expires_in_seconds` | No | URL validity (defaults to requested TTL) |
+| `session.session_id` | No | Your internal session ID |
+| `message.body` | No | WhatsApp CTA message body |
+| `message.button_text` | No | Button label (max 20 chars) |
+
+**Error response:**
+
+```json
+{
+  "status": "error",
+  "error": {
+    "code": "store_closed",
+    "message": "Store is currently closed. Opens at 9:00 AM."
+  }
+}
+```
+
+---
+
+### session.complete (Addon → StoreTalk)
+
+Your addon calls this when the customer completes an action.
+
+**Endpoint:** `POST {callback_url}` (the URL from session.create)
+
+```json
+{
+  "event": "session.complete",
+  "delivery_id": "uuid-from-session-create",
+  "variables": {
+    "order_id": "ORD-12345",
+    "order_total": "255",
+    "order_summary": "2× Basmati Rice ₹120, 1× Toor Dal ₹80, 1× Butter ₹55",
+    "item_count": "3"
+  }
+}
+```
+
+<Warning>
+  All variable values must be **strings**, even numbers. StoreTalk parses them as needed.
+</Warning>
+
+**Variable naming conventions:** StoreTalk auto-maps common names to populate the activity record:
+
+| Purpose | Checked in order (first match wins) |
+|---|---|
+| Reference ID | `order_id`, `booking_id`, `reference_id`, `ref` |
+| Amount (rupees) | `order_total`, `amount`, `fee`, `price`, `total` |
+| Description | `order_summary`, `description`, `summary`, `items` |
+
+All variables are injected into the flow session and available as `{{variable_name}}` in downstream nodes.
+
+---
+
+### install (StoreTalk → Addon)
+
+Sent when a tenant installs your addon. Use this to provision tenant-specific resources.
+
+**Endpoint:** `POST {your_webhook_url}/events`
+
+```json
+{
+  "event": "install",
+  "addon_id": "your-slug",
+  "timestamp": "2026-04-06T10:30:00Z",
+  "tenant_id": "uuid",
+  "install_id": "uuid",
+  "store_name": "My Store",
+  "store_logo_url": null,
+  "config": null
+}
+```
+
+---
+
+## HMAC-SHA256 signing
+
+Both sides sign every request. The shared secret is configured when the addon is registered.
+
+### Verifying signatures (your addon receives from StoreTalk)
+
+```javascript
+const crypto = require('crypto');
+
+function verifyStoreTalkSignature(rawBody, signatureHeader, secret) {
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(rawBody, 'utf8')
+    .digest('hex');
+
+  const received = signatureHeader.replace('sha256=', '');
+
+  return crypto.timingSafeEqual(
+    Buffer.from(received),
+    Buffer.from(expected)
+  );
+}
+
+// In your Express handler:
+app.post('/events', (req, res) => {
+  const sig = req.headers['x-storetalk-signature'];
+  if (!verifyStoreTalkSignature(req.rawBody, sig, process.env.WEBHOOK_SECRET)) {
+    return res.status(401).json({ error: 'invalid_signature' });
+  }
+  // ... process event
+});
+```
+
+### Signing requests (your addon sends to StoreTalk)
+
+```javascript
+function signPayload(body, secret) {
+  const hmac = crypto
+    .createHmac('sha256', secret)
+    .update(body, 'utf8')
+    .digest('hex');
+  return `sha256=${hmac}`;
+}
+
+// When calling the callback:
+const body = JSON.stringify(payload);
+const response = await fetch(callbackUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Addon-Signature': signPayload(body, process.env.WEBHOOK_SECRET),
+    'X-Addon-Id': 'your-slug',
+  },
+  body,
+});
+```
+
+<Note>
+  Always use **constant-time comparison** (`timingSafeEqual`) to prevent timing attacks.
+  Validate `X-StoreTalk-Timestamp` is within 5 minutes to prevent replay attacks.
+</Note>
+
+---
+
+## Dashboard authentication
+
+If your addon has a management dashboard, StoreTalk provides a token-exchange flow so tenant owners can access it without a separate login.
+
+**Step 1:** User clicks "Open Dashboard" in StoreTalk portal
+
+**Step 2:** StoreTalk calls your auth endpoint:
+
+```
+POST {your_webhook_url}/auth/token
+X-StoreTalk-Signature: sha256=<hmac>
+
+{
+  "tenant_id": "uuid",
+  "user_id": "uuid",
+  "role": "owner"
+}
+```
+
+**Step 3:** Return a short-lived token:
+
+```json
+{
+  "token": "eyJ...your-jwt-or-session-token"
+}
+```
+
+**Step 4:** StoreTalk redirects to `{your_webhook_url}/dashboard?token={token}`
+
+---
+
+## Actions manifest
+
+When registering your addon, you define the actions it supports. Each action becomes available as a Flow Builder node option.
+
+```json
+[
+  {
+    "name": "open_shop",
+    "description": "Open the store for the customer to browse and order",
+    "type": "session",
+    "category": "write",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "Pre-filter to a product category"
+        }
+      }
+    },
+    "output_variables": ["order_id", "order_total", "order_summary", "item_count"],
+    "session_ttl_seconds": 1800
+  }
+]
+```
+
+| Field | Description |
+|---|---|
+| `name` | Action identifier (used in session.create `action` field) |
+| `type` | `"session"` (opens URL, async callback) or `"api"` (sync request-response) |
+| `category` | `"read"` (no side effects) or `"write"` (creates/modifies data) |
+| `input_schema` | JSON Schema for the `input` payload |
+| `output_variables` | Variable names returned in session.complete (shown in Flow Builder) |
+| `session_ttl_seconds` | Default session timeout |
+
+---
+
+## Registration
+
+Addons are registered via the admin API. Here's the full request:
+
+```bash
+curl -X POST "https://api.storetalk.app/api/admin/addons" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Your Addon Name",
+    "slug": "your-slug",
+    "description": "Full description shown on the detail page.",
+    "shortDescription": "One-liner for marketplace listing.",
+    "iconUrl": "https://your-cdn.com/icon.png",
+    "category": "E-commerce",
+    "developerName": "Your Company",
+    "developerEmail": "dev@yourcompany.com",
+    "webhookUrl": "https://your-addon.com",
+    "supportedEventsJson": "[\"session.create\",\"session.complete\",\"install\"]",
+    "actionsJson": "[{\"name\":\"open_shop\",\"description\":\"Browse products\",\"type\":\"session\",\"category\":\"write\",\"output_variables\":[\"order_id\",\"order_total\",\"order_summary\"],\"session_ttl_seconds\":1800}]",
+    "scopesJson": "[\"contacts.read\"]",
+    "pricingType": "Free",
+    "isFirstParty": false
+  }'
+```
+
+After registration, publish the addon:
+
+```bash
+curl -X PUT "https://api.storetalk.app/api/admin/addons/{addon_id}/status" \
+  -H "Authorization: Bearer $ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "Published"}'
+```
+
+---
+
+## Session lifecycle diagram
+
+```
+Customer sends message
+        ↓
+Flow reaches Addon node
+        ↓
+StoreTalk → POST /events (session.create)     [5s timeout]
+        ↓
+Your addon returns session URL
+        ↓
+StoreTalk sends WhatsApp CTA button to customer
+        ↓
+Customer taps button → opens your web UI
+        ↓
+Customer completes action (order, booking, etc.)
+        ↓
+Your addon → POST /api/addons/callback/{delivery_id}  (session.complete)
+        ↓
+StoreTalk merges variables into flow session
+        ↓
+Flow resumes from successNextNode
+        ↓
+Downstream nodes use {{order_id}}, {{order_total}}, etc.
+```
+
+---
+
+## Error handling
+
+| Scenario | What happens |
+|---|---|
+| Your addon doesn't respond in 5s | Flow follows the timeout path, customer gets timeout message |
+| Your addon returns `status: "error"` | Error message sent to customer, flow follows failure path |
+| Callback has wrong `delivery_id` | StoreTalk returns `400 Bad Request`, no flow resumed |
+| Callback has invalid signature | StoreTalk returns `401 Unauthorized` |
+| StoreTalk doesn't respond to callback | Safe to retry — idempotency is built in |
+
+---
+
+## Security checklist
+
+Before going live, verify your addon:
+
+- [ ] Verifies `X-StoreTalk-Signature` on all inbound webhooks (constant-time comparison)
+- [ ] Validates `X-StoreTalk-Timestamp` is within 5 minutes (replay protection)
+- [ ] Signs all outbound requests with `X-Addon-Signature`
+- [ ] Stores webhook secret securely (env var or vault, never in code)
+- [ ] Uses HTTPS for all endpoints
+- [ ] Session URLs include expiring auth tokens
+- [ ] Implements idempotency for session.complete callbacks
+- [ ] Returns proper HTTP status codes (200 for success, 4xx/5xx for errors)
+
+---
+
+## Reference implementation
+
+The **StoreTalk Grocery** addon is a complete working example:
+
+- Implements session.create, session.complete, install events
+- Web UI with product browse, cart, and checkout
+- HMAC signature verification
+- Dashboard with token-based auth
+- Returns order variables for downstream payment flow
+
+Source: Ask the StoreTalk team for access to the grocery addon reference implementation.
+
+<CardGroup cols={2}>
+  <Card title="Addons overview" icon="puzzle-piece" href="/addons/addons-intro">
+    How addons work from a store owner's perspective.
+  </Card>
+  <Card title="Managing addons" icon="gear" href="/addons/manage-addons">
+    Installing, configuring, and monitoring addons.
+  </Card>
+</CardGroup>
