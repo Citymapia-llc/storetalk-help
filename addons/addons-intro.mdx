@@ -1,0 +1,78 @@
+---
+title: "Addons Overview"
+description: "Extend your WhatsApp flows with apps from the StoreTalk Addon Marketplace"
+---
+
+Addons are extensions that plug new capabilities into your WhatsApp chatbot flows. Instead of building everything from scratch, you install an addon and drop it into any flow as an **Addon node** — the addon handles the hard parts for you.
+
+Common examples include e-commerce catalogues, product search, appointment booking, and third-party payment gateways. When a customer reaches an Addon node in a flow, StoreTalk hands off to the addon, which runs its logic and returns a result that the flow can act on.
+
+## How addons fit into flows
+
+```
+Customer sends a message
+        ↓
+Flow runs → reaches an Addon node
+        ↓
+StoreTalk calls the addon
+        ↓
+Addon runs its logic
+(e.g. looks up products, creates a booking)
+        ↓
+Flow continues on the success or failure path
+```
+
+You connect addons to flows using the **Addon** node in the Flow Builder. Each node is linked to one of your installed addon instances. One flow can use multiple addons; one addon can be used in multiple flows.
+
+## Two types of addons
+
+<CardGroup cols={2}>
+  <Card title="First-party addons" icon="store" color="#1a7f5a">
+    Built and maintained by the StoreTalk team. Free to install on any plan. These cover the most common needs — product browsing, order status lookups, and more.
+  </Card>
+  <Card title="Third-party addons" icon="puzzle-piece" color="#1a7f5a">
+    Built by independent developers using the StoreTalk Addon API. Quality is reviewed before listing. May carry a cost depending on the developer's pricing model.
+  </Card>
+</CardGroup>
+
+## Pricing models
+
+Each addon listing shows one of three pricing models:
+
+| Model | What it means |
+|---|---|
+| **Free** | No charge, ever. Install and use without limits. |
+| **Monthly subscription** | A recurring charge billed each month. Cancel any time to stop. |
+| **One-time purchase** | Pay once, use forever. No recurring fees. |
+
+<Note>
+  Addon charges are separate from your StoreTalk plan. Your plan covers the StoreTalk platform; addons are priced by their respective developers.
+</Note>
+
+## Multiple instances of the same addon
+
+You can install the same addon more than once — each installation is an independent **instance** with its own name and configuration. This is useful when you run more than one operation using the same addon type.
+
+For example, if you install the e-commerce storefront addon twice:
+
+- **Instance 1:** "Main Store" — connected to your regular product catalogue
+- **Instance 2:** "Sale Items" — connected to a separate discounted catalogue
+
+Each instance appears separately in your flows, so you can send customers to the right storefront depending on what they asked for.
+
+## Finding addons
+
+Open **Addons** in the left sidebar and go to the **Marketplace** tab. You can browse by category or search by name. Selecting an addon shows its full description, the actions it adds to the Flow Builder, and its pricing options.
+
+<Tip>
+  Not sure which addon is right for you? Read the "What this addon adds to your flows" section on each listing page — it shows exactly which new node types become available after installing.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Install and manage addons" icon="gear" href="/addons/manage-addons">
+    Step-by-step guide to installing, configuring, and monitoring your installed addons.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Learn how the Flow Builder works and where Addon nodes fit in.
+  </Card>
+</CardGroup>
