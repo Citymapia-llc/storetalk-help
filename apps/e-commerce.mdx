@@ -1,0 +1,126 @@
+---
+title: "E-Commerce App"
+description: "Full online store inside WhatsApp — catalogue, cart, checkout, pick & pack, delivery or pickup"
+---
+
+The **StoreTalk E-Commerce App** turns your WhatsApp number into a complete online store. Customers browse products, add items to cart, check out, and receive order updates — all without leaving the chat.
+
+## What it does
+
+When a customer triggers your store flow, they receive a WhatsApp button that opens your product catalogue. They browse, select items, choose a delivery or pickup option, and place their order. The app then walks your staff through picking and packing, notifies customers about unavailable items, and sends status updates all the way to delivery or pickup.
+
+## Features
+
+- Product catalogue with categories, variants, and images
+- Bilingual product names (English + local language)
+- Shopping cart with quantity management and coupon codes
+- Delivery address collection **or** store pickup
+- Razorpay or Cash-on-Delivery payment
+- QR-based staff pick & pack workflow
+- Customer edit link when items are unavailable
+- Delivery status updates pushed to WhatsApp
+- Ready-for-pickup notifications for pickup orders
+
+## How a typical flow looks
+
+```
+Customer sends keyword (e.g. "shop")
+        ↓
+Flow starts → reaches the App node
+        ↓
+Customer taps "Open Store" button on WhatsApp
+        ↓
+Customer browses → adds to cart → chooses delivery or pickup → checks out
+        ↓
+Flow receives order details and continues
+(payment link, confirmation message, etc.)
+        ↓
+Store staff picks & packs the order
+        ↓
+Customer receives fulfillment updates on WhatsApp
+(preparing → shipped → delivered, or ready for pickup → picked up)
+```
+
+## Setting up
+
+<Steps>
+  <Step title="Install the app">
+    Go to **Apps → Marketplace**, find **StoreTalk E-Commerce**, and click **Install**. Give the instance a name that describes the store (e.g. "Grocery Store" or "Electronics Shop").
+  </Step>
+  <Step title="Configure your products">
+    Click **Open Dashboard** on the app's Dashboard tab. This opens the store admin panel where you manage your product catalogue — categories, products, prices, images, inventory, and coupons.
+  </Step>
+  <Step title="Choose delivery, pickup, or both">
+    In **Settings → Store Settings**, enable delivery (default), pickup, or both. For pickup, set your pickup location address and any collection instructions.
+  </Step>
+  <Step title="Create a flow">
+    In the **Flow Builder**, create a flow with a keyword trigger (e.g. "shop" or "order"). Add an **App** node, select your E-Commerce instance, and set the action to `open_shop`.
+  </Step>
+  <Step title="Add downstream nodes">
+    After the App node, add your payment node (if using Razorpay) and a confirmation message. Use the flow variables returned by the app (see below).
+  </Step>
+  <Step title="Publish the flow">
+    Click **Publish**. Customers can now trigger it by sending the keyword to your WhatsApp number.
+  </Step>
+</Steps>
+
+## Flow variables
+
+The app returns these variables after a customer completes an order. Use them in downstream flow nodes with `{{variable_name}}` syntax.
+
+| Variable | Example | Description |
+|---|---|---|
+| `order_id` | `ORD-260415-B7K2` | Unique order reference |
+| `order_total` | `1245` | Total amount in rupees |
+| `order_summary` | `2× Basmati Rice, 1× Toor Dal` | Human-readable item list |
+| `item_count` | `3` | Number of items in the order |
+
+## Fulfillment flow
+
+Once an order is placed, the rest happens in the app's admin dashboard.
+
+- **[Pick & Pack](/apps/e-commerce-pick-pack)** — staff scan a QR code on the dashboard to pick items from a phone, mark unavailable items, and suggest alternatives.
+- **[Delivery vs Pickup](/apps/e-commerce-delivery-pickup)** — how delivery and pickup orders differ, what your staff does for each, and how customers are notified.
+
+Your staff uses these pages daily; they don't need flow builder access.
+
+## Multiple stores
+
+You can install the E-Commerce App more than once to run separate stores from the same WhatsApp number. For example:
+
+- **"Grocery Store"** — everyday essentials with a "grocery" keyword
+- **"Weekend Specials"** — limited-time offers with a "specials" keyword
+
+Each instance has its own product catalogue, inventory, and admin dashboard. Assign each to a different flow with a different trigger keyword.
+
+## Example confirmation message
+
+```
+Order Confirmed! ✅
+
+{{order_summary}}
+
+Total: ₹{{order_total}}
+Order ID: {{order_id}}
+
+You'll receive updates as we pack and ship your order.
+```
+
+## Pricing
+
+The E-Commerce App is **free** for all StoreTalk plans. Standard Razorpay transaction fees apply for payments processed through the checkout.
+
+<CardGroup cols={2}>
+  <Card title="Pick & pack workflow" icon="boxes-packing" href="/apps/e-commerce-pick-pack">
+    Step-by-step guide for staff: scan QR, pick items, handle unavailable stock.
+  </Card>
+  <Card title="Delivery vs pickup" icon="truck" href="/apps/e-commerce-delivery-pickup">
+    How the two fulfillment types work and what your staff does for each.
+  </Card>
+  <Card title="Apps overview" icon="puzzle-piece" href="/apps/apps-intro">
+    Learn how StoreTalk Apps work and how to find them.
+  </Card>
+  <Card title="Managing apps" icon="gear" href="/apps/manage-apps">
+    Install, configure, and monitor your apps.
+  </Card>
+</CardGroup>

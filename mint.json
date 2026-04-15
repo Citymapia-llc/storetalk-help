@@ -113,12 +113,19 @@
       ]
     },
     {
-      "group": "Addons",
+      "group": "StoreTalk Apps",
       "pages": [
-        "addons/addons-intro",
-        "addons/manage-addons",
-        "addons/e-store",
-        "addons/building-addons"
+        "apps/apps-intro",
+        "apps/manage-apps",
+        {
+          "group": "E-Commerce",
+          "pages": [
+            "apps/e-commerce",
+            "apps/e-commerce-pick-pack",
+            "apps/e-commerce-delivery-pickup"
+          ]
+        },
+        "apps/building-apps"
       ]
     },
     {

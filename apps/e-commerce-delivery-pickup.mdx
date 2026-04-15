@@ -1,0 +1,158 @@
+---
+title: "Delivery vs Pickup"
+description: "How the two fulfillment types work and what your staff does for each"
+---
+
+The E-Commerce App supports two fulfillment types. Customers choose at checkout; your staff handles each differently once picking is done.
+
+## At a glance
+
+| | **Delivery** | **Pickup** |
+|---|---|---|
+| Who brings the order to whom | Your team delivers | Customer collects |
+| Address required | Yes | No |
+| After picking | Prepares, ships, delivered | Ready for pickup, picked up |
+| WhatsApp notifications | At each step | When ready + when collected |
+| Best for | Home delivery orders | Same-day, walk-in, quick-serve |
+
+## Enabling pickup
+
+Pickup is off by default — all orders are treated as delivery. To turn on pickup:
+
+<Steps>
+  <Step title="Open store settings">
+    Click **Open Dashboard** on the app, then go to **Settings → Store Settings**.
+  </Step>
+  <Step title="Enable pickup">
+    Toggle **Pickup Enabled**.
+  </Step>
+  <Step title="Set pickup location">
+    Fill in **Pickup Location** with the shop address customers should come to. Add any **Pickup Instructions** (e.g. "Ask at counter" or "Parking behind the building").
+  </Step>
+  <Step title="Save">
+    Customers now see a delivery-or-pickup choice on checkout.
+  </Step>
+</Steps>
+
+<Tip>
+  Keep pickup enabled for stores where customers regularly walk in — it saves on delivery costs and speeds up turnaround. Many customers prefer pickup if they're nearby.
+</Tip>
+
+## The delivery flow
+
+```
+Order placed (with address)
+        ↓
+Confirmed — store owner accepts the order
+        ↓
+Picking — staff scans QR and picks items
+        ↓
+Preparing — packed and ready for dispatch
+        ↓
+Shipped — handed to courier (tracking number optional)
+        ↓
+Out for Delivery — courier is on the way
+        ↓
+Delivered — customer received the package
+```
+
+At each step, the customer gets a WhatsApp message. Your staff advances the status from the order detail page using the action buttons.
+
+## The pickup flow
+
+```
+Order placed (no address needed)
+        ↓
+Confirmed — store owner accepts the order
+        ↓
+Picking — staff scans QR and picks items
+        ↓
+Preparing — packed and ready
+        ↓
+Ready for Pickup — customer notified via WhatsApp with pickup location
+        ↓
+Picked Up — customer collected it (staff marks this from the dashboard)
+```
+
+Pickup orders skip the Shipped / Out for Delivery steps entirely.
+
+<Note>
+  After picking auto-completes, pickup orders jump straight to **Ready for Pickup** — the customer gets an instant WhatsApp message with your store address and collection instructions. No manual action needed by staff.
+</Note>
+
+## What staff actually does
+
+### For delivery orders
+
+<Steps>
+  <Step title="Confirm the order">
+    New order comes in. Click **Confirm Order** in the admin dashboard.
+  </Step>
+  <Step title="Pick the items">
+    Generate Pick QR, scan, pick items. See the [Pick & Pack guide](/apps/e-commerce-pick-pack).
+  </Step>
+  <Step title="Prepare for dispatch">
+    Picking auto-completes → status is "Preparing". Pack the items, add a delivery label.
+  </Step>
+  <Step title="Mark as shipped">
+    Click **Mark Shipped**. Optionally add the carrier name and tracking number — customer receives these via WhatsApp.
+  </Step>
+  <Step title="Mark out for delivery / delivered">
+    Update status as the courier progresses. Each change triggers a WhatsApp update to the customer.
+  </Step>
+</Steps>
+
+### For pickup orders
+
+<Steps>
+  <Step title="Confirm the order">
+    New order comes in. Click **Confirm Order**.
+  </Step>
+  <Step title="Pick the items">
+    Generate Pick QR, scan, pick items. Same workflow as delivery.
+  </Step>
+  <Step title="Wait for the customer">
+    Picking auto-completes → status is "Ready for Pickup". The customer has already been notified. Keep the order at the counter.
+  </Step>
+  <Step title="Mark as picked up">
+    When the customer arrives and collects, click **Mark Picked Up**. The order closes out.
+  </Step>
+</Steps>
+
+## Cancellations and refunds
+
+Either type of order can be cancelled at any stage before it's delivered or picked up. Click **Cancel Order**, enter a reason, and the customer is notified.
+
+After cancellation, you can initiate a refund:
+
+- **Initiate Refund** → status moves to "Refund Initiated"
+- **Mark Refunded** → status moves to "Refunded" (terminal)
+
+## When a customer hasn't given an address
+
+If a delivery order somehow reaches you without a delivery address (rare — usually from older flows), the **Delivery Address** section shows a warning and a **Request Location** button. Tapping it sends the customer a WhatsApp message asking them to share their location. Once shared, the address populates on the order automatically.
+
+For pickup orders this section just says "Store Pickup" — no address needed.
+
+## Notifications customers receive
+
+| Status | Delivery | Pickup |
+|---|---|---|
+| Order accepted | ✅ | ✅ |
+| Picking started | ✅ "Staff has started packing" | ✅ (same) |
+| Item unavailable | ✅ With edit link | ✅ (same) |
+| Ready | — | ✅ "Your order is ready at {location}" |
+| Shipped | ✅ With tracking | — |
+| Out for delivery | ✅ | — |
+| Delivered | ✅ | — |
+| Picked up | — | ✅ |
+| Cancelled | ✅ | ✅ |
+
+<CardGroup cols={2}>
+  <Card title="Pick & pack workflow" icon="boxes-packing" href="/apps/e-commerce-pick-pack">
+    What staff does on the phone to pick each order.
+  </Card>
+  <Card title="E-Commerce overview" icon="store" href="/apps/e-commerce">
+    Back to the full app guide.
+  </Card>
+</CardGroup>

@@ -1,0 +1,119 @@
+---
+title: "Managing Apps"
+description: "Install, configure, and monitor your installed StoreTalk Apps"
+---
+
+## Installing an app
+
+<Steps>
+  <Step title="Go to the Marketplace">
+    Click **Apps** in the left sidebar, then open the **Marketplace** tab.
+  </Step>
+  <Step title="Find an app">
+    Browse by category or use the search bar. Click any app card to open its detail page.
+  </Step>
+  <Step title="Review what it does">
+    The detail page shows the app's description, the Flow Builder node types it adds, and any configuration it requires before use.
+  </Step>
+  <Step title="Choose a plan">
+    In the right panel, select a pricing plan — Free, Monthly, or One-time. The plan details and any cost are shown before you confirm.
+  </Step>
+  <Step title="Click Install">
+    Click **Install**. The app appears immediately in your **My Apps** tab with a default instance name. You can rename and configure it straight away.
+  </Step>
+</Steps>
+
+---
+
+## Managing your installations
+
+Open **Apps → My Apps** to see all your installed instances. Click any row to open its management view. The right panel shows the instance name, its status, and controls for renaming, configuring, and uninstalling.
+
+The management view has several tabs:
+
+### Dashboard
+
+A summary of activity for the last 30 days:
+
+| Metric | What it measures |
+|---|---|
+| Sessions started | How many times a customer triggered this app |
+| Sessions completed | How many sessions reached a successful outcome |
+| Sessions failed | Sessions that ended on the failure path |
+| Avg duration | Average time from session start to completion |
+| Unique contacts | Number of distinct customers who used this app |
+| Repeat users | Customers who used it more than once |
+| Revenue generated | Total value of orders or payments processed through this app |
+
+If the app has its own management interface (for example, a store admin panel), an **Open Dashboard** button appears at the top of this tab.
+
+### Activity
+
+A session timeline chart and an event-by-event log of everything that happened inside each session — useful for understanding where customers drop off.
+
+### Webhooks
+
+A full log of every HTTP request and response between StoreTalk and the app, in both directions. Expand any row to see the exact request payload and the app's response. Use this tab when debugging unexpected behaviour.
+
+### Orders
+
+All orders placed through this app instance, including status and value. This tab only appears for apps that process orders.
+
+### Contacts
+
+Every customer who has interacted with this app instance, with the date of their first and most recent session.
+
+<Tip>
+  Use the **Export for Campaign** button to download this contact list and send them a targeted WhatsApp campaign — for example, a follow-up offer to everyone who browsed your catalogue but did not place an order.
+</Tip>
+
+### Flows
+
+Lists every flow in your account that is currently using this app instance. Use this to understand the impact before making changes to the app's configuration.
+
+### Details
+
+The app's full description, feature list, and the total number of businesses currently using it across all StoreTalk accounts.
+
+---
+
+## Renaming an installation
+
+Each installed app has a name that appears inside the Flow Builder when you pick it for an App node. The default name is the app's product name.
+
+To rename: click **Rename Instance** in the right panel, enter the new name, and save. Choose a name that describes what this instance does, especially if you have more than one instance of the same app (for example, "Store — Main Catalogue" and "Store — Sale Items").
+
+---
+
+## Configuring an app
+
+Some apps require you to supply configuration before they can work — for example, an API key for a third-party service or your business hours for a booking app.
+
+The **Config** section in the right panel lists every required and optional field. Fill in the values and they save immediately. Fields marked with a red asterisk are required; the app will not function until these are provided.
+
+<Note>
+  Configuration fields differ by app. Refer to the app's **Details** tab or its developer documentation if you are unsure what a field expects.
+</Note>
+
+---
+
+## Uninstalling an app
+
+Click **Uninstall App** in the danger zone at the bottom of the right panel.
+
+<Warning>
+  If this app instance is used in one or more of your active flows, StoreTalk will show a warning listing those flows by name. You must remove the App node from each of those flows before you can complete the uninstall. Removing a node from a live flow stops it from being available to customers immediately — update your flows during low-traffic hours to minimise disruption.
+</Warning>
+
+Once no flows are using the instance, the uninstall completes instantly. Historical activity data (sessions, orders, contacts) is retained for 90 days after uninstall and then permanently deleted.
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Apps overview" icon="puzzle-piece" href="/apps/apps-intro">
+    Learn what StoreTalk Apps are and how they fit into your WhatsApp flows.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Add an App node to a flow and connect it to an installed instance.
+  </Card>
+</CardGroup>

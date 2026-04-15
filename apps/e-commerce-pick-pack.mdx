@@ -1,0 +1,142 @@
+---
+title: "Pick & Pack"
+description: "How store staff pick items from shelves, handle unavailable stock, and complete orders"
+---
+
+Pick & Pack is the workflow your store staff uses after a customer places an order. They scan a QR code from the admin dashboard on their phone, walk around the store checking off items, flag anything that's out of stock, and finish when the order is ready.
+
+No app install. No staff login. Anyone in the store can pick up a phone, scan, and help.
+
+## The flow at a glance
+
+```
+Customer places order
+        ↓
+Admin dashboard shows "Generate Pick QR" button on the order
+        ↓
+Staff scans QR with phone → enters their name → sees item list
+        ↓
+Staff walks the store:
+  ✓ Pick item (mark as picked)
+  ✗ Unavailable (suggest alternative if possible)
+        ↓
+If alternative suggested:
+  Customer gets WhatsApp message with "Accept / Replace / Remove" options
+  Customer confirms → order updates automatically
+        ↓
+Once all items resolved, picking auto-completes
+        ↓
+Order status moves to "Preparing" (for delivery) or "Ready for Pickup"
+```
+
+## Starting a pick session
+
+<Steps>
+  <Step title="Open the order in the dashboard">
+    Go to **Orders** in the app admin and click the order the customer just placed. You'll see an order detail page with a **Pick & Pack** section on the right.
+  </Step>
+  <Step title="Generate a pick QR">
+    Click **Generate Pick QR**. A QR code appears with an expiry time (usually 4 hours). Any staff member with a phone camera can scan it.
+  </Step>
+  <Step title="Scan with your phone">
+    Open the camera app on your phone and point it at the QR. Tap the link that appears — it opens a mobile-friendly pick page. No app install needed.
+  </Step>
+  <Step title="Enter your name">
+    First time only: enter your first name. This is shown to the store owner so they know who picked each order. Your name is remembered on your phone for next time.
+  </Step>
+  <Step title="Start picking">
+    You'll see the full list of items the customer ordered. Walk around the store and tap each item as you grab it.
+  </Step>
+</Steps>
+
+## Picking each item
+
+Each item on the list has two buttons:
+
+<CardGroup cols={2}>
+  <Card title="✓ Pick" icon="check" color="#166534">
+    Tap this when you've grabbed the item from the shelf. The item turns green and locks — the customer can't remove it anymore.
+  </Card>
+  <Card title="✗ Unavailable" icon="xmark" color="#991b1b">
+    Tap this if the item isn't in stock or you can't find it. The app will ask if you want to suggest an alternative.
+  </Card>
+</CardGroup>
+
+## Handling unavailable items
+
+When you mark something unavailable, you can suggest a similar product from the same category.
+
+<Steps>
+  <Step title="Tap 'Suggest Alternate'">
+    The app shows a list of similar products (same category, in stock).
+  </Step>
+  <Step title="Pick one to suggest">
+    Tap the product that's closest. The customer sees the suggestion with price.
+  </Step>
+  <Step title="Customer gets a WhatsApp message">
+    StoreTalk sends the customer a message: "Toor Dal 1kg is unavailable. We suggest Moong Dal 1kg (₹85)." They can tap a link to **Accept**, **Replace** with something else, or **Remove** from the order.
+  </Step>
+  <Step title="Keep picking other items">
+    Don't wait for the customer — continue picking the rest of the order. The waiting item shows as "Waiting for Customer" until they respond.
+  </Step>
+</Steps>
+
+<Tip>
+  The customer can only edit items that haven't been picked yet. Once you tap "✓ Pick" on an item, it's locked — even the customer can't change it.
+</Tip>
+
+## When the customer shares a delivery location
+
+For delivery orders where the address wasn't provided at checkout (rare, usually from older flows), you can request the address via WhatsApp.
+
+In the order detail page, if there's no address, the **Delivery Address** card shows a **Request Location** button. Tap it — the customer receives a WhatsApp message asking them to share their location. Once they do, the address appears on the order.
+
+<Note>
+  This works best for orders created via a flow that doesn't collect the address inline. Most checkout flows already collect the address during ordering, so this button only appears when needed.
+</Note>
+
+## Finishing a pick session
+
+You don't need to manually mark the pick as complete. As soon as every item is resolved (picked, substituted, or removed), the app auto-completes the pick for you.
+
+The order status then advances:
+
+- **Delivery orders** → moves to "Preparing" — ready for packaging and dispatch.
+- **Pickup orders** → moves to "Ready for Pickup" — the customer is notified automatically that their order is ready to collect.
+
+If you tap **Complete Picking** manually after the auto-complete has already happened, the app just acknowledges it — no harm done.
+
+## What the store owner sees
+
+While you're picking, the store owner sees real-time progress on their dashboard:
+
+- Your name (so they know who's picking)
+- Item counts: picked, remaining, waiting on customer
+- A progress bar
+
+The dashboard refreshes every 10 seconds. Owners can watch multiple orders at once.
+
+## Multiple staff picking at once
+
+Each order has its own QR. If two orders come in, generate two QRs — one staff takes each phone, each scans their own QR. They work in parallel without stepping on each other.
+
+<Warning>
+  One order, one active QR. If you regenerate the QR for an order that's already being picked, the earlier QR becomes invalid. The previous picker will lose their session and need to rescan.
+</Warning>
+
+## Troubleshooting
+
+**"Link expired" when I try to pick.** The QR expires after 4 hours or after the pick completes. Go back to the order in the dashboard and generate a new QR.
+
+**Customer isn't responding to the alternate suggestion.** Keep picking the rest of the order. You can always cancel the order if the customer goes silent — the unanswered item stays "Waiting for Customer" without blocking the other items.
+
+**I made a mistake on an item.** You can't undo a "Pick" or "Unavailable" from the phone page. Ask the store owner to edit the order from the admin dashboard.
+
+<CardGroup cols={2}>
+  <Card title="Delivery vs pickup" icon="truck" href="/apps/e-commerce-delivery-pickup">
+    How the two fulfillment types differ.
+  </Card>
+  <Card title="E-Commerce overview" icon="store" href="/apps/e-commerce">
+    Back to the full app guide.
+  </Card>
+</CardGroup>

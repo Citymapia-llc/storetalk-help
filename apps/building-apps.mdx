@@ -1,0 +1,223 @@
+---
+title: "Building Apps — Developer Guide"
+description: "Build a StoreTalk App that plugs into WhatsApp flows via the published SDK"
+---
+
+This guide is for developers building new **StoreTalk Apps**. An app is a standalone web service that receives signed webhooks from StoreTalk and returns results for flows to act on. You can build one in any language — we publish a TypeScript SDK that handles the protocol for you.
+
+## Architecture overview
+
+```
+┌──────────────┐       webhook        ┌──────────────┐
+│  StoreTalk   │ ───────────────────→ │   Your App   │
+│  Flow Engine │                      │    Server    │
+│              │ ←─────────────────── │              │
+│              │      callback        │              │
+└──────────────┘                      └──────────────┘
+        ↕                                    ↕
+   WhatsApp API                        Your Web UI
+   (sends CTA button                   (customer browses,
+    to customer)                        places order, etc.)
+```
+
+1. Customer triggers a flow → reaches an **App node**
+2. StoreTalk calls your app's webhook with `session.create`
+3. Your app returns a **session URL** (your web UI)
+4. StoreTalk sends the URL as a WhatsApp button to the customer
+5. Customer completes the action in your web UI
+6. Your app calls StoreTalk's **callback URL** with `session.complete`
+7. Flow resumes with the variables you return
+
+## Two-phase lifecycle
+
+StoreTalk apps run in two distinct phases:
+
+<CardGroup cols={2}>
+  <Card title="Session phase" icon="clock" color="#1a7f5a">
+    The customer is actively engaged. The flow is **paused** at the App node. Status pushes move the session forward. A terminal status (like `order_confirmed`) completes the session and resumes the flow.
+  </Card>
+  <Card title="Fulfillment phase" icon="truck" color="#1a7f5a">
+    The flow has already finished. Your app continues working in the background (packing an order, tracking delivery). Each status push sends a WhatsApp message directly to the customer — no flow involvement.
+  </Card>
+</CardGroup>
+
+Example lifecycle for an e-commerce app:
+
+```
+SESSION phase       : browsing → cart_updated → order_confirmed (terminal ✓)
+                                                      ↓
+                                              [flow resumes here]
+FULFILLMENT phase   : order_accepted → picking → preparing → shipped → delivered
+```
+
+Customer is freed after `order_confirmed`. All the delivery updates happen in fulfillment without the flow needing to wait.
+
+## Start with the SDK
+
+Install the official SDK:
+
+```bash
+npm install @citymapia-llc/storetalk-app-sdk
+```
+
+Minimal app:
+
+```typescript
+import { StoreTalkApp } from '@citymapia-llc/storetalk-app-sdk';
+import Fastify from 'fastify';
+
+export const app = new StoreTalkApp({
+  slug: 'my-app',
+  secret: process.env.STORETALK_APP_SECRET!,
+  lifecycle: [
+    { status: 'started',  phase: 'session', terminal: false },
+    { status: 'completed', phase: 'session', terminal: true,
+      variables: ['result'] },
+  ],
+});
+
+// Handle incoming session.create
+app.onSessionCreate(async (event) => {
+  // Return a URL StoreTalk will send as a WhatsApp CTA button
+  return {
+    status: 'success',
+    session: {
+      url: `https://my-app.example.com/s/${event.delivery_id}`,
+      expires_in_seconds: 1800,
+    },
+    message: {
+      body: 'Tap to get started',
+      button_text: 'Open',
+    },
+  };
+});
+
+// Your HTTP server
+const fastify = Fastify();
+fastify.post('/webhook', async (req, reply) => {
+  return app.handleWebhook(req.raw, reply.raw);
+});
+fastify.listen({ port: 3000 });
+```
+
+When the customer finishes, call `app.complete()`:
+
+```typescript
+await app.complete(
+  { deliveryId, callbackUrl },
+  'completed',
+  { result: 'Customer entered: Hello!' }
+);
+```
+
+The flow resumes with `{{result}}` available as a variable.
+
+## The manifest
+
+Every app must expose `GET /api/manifest`. StoreTalk reads it when registering the app to learn what actions and events it supports.
+
+```json
+{
+  "slug": "my-app",
+  "actions": [
+    {
+      "slug": "open_form",
+      "label": "Open Form",
+      "description": "Show a feedback form to the customer"
+    }
+  ],
+  "lifecycle": [...],
+  "sdk_version": "0.6.0",
+  "webhook_url": "https://my-app.example.com/webhook",
+  "public_url": "https://my-app.example.com"
+}
+```
+
+The SDK auto-generates this from your `StoreTalkApp` config. Just mount it:
+
+```typescript
+fastify.get('/api/manifest', async () => app.manifest());
+```
+
+## Fulfillment updates
+
+After a session completes, you can keep sending updates:
+
+```typescript
+// Non-terminal — keeps the lifecycle open
+await app.pushFulfillment(session, 'shipped', {
+  tracking_number: 'AWB123456',
+});
+
+// Terminal — closes the fulfillment lifecycle
+await app.completeFulfillment(session, 'delivered', {
+  delivery_time: '3:45 PM',
+});
+```
+
+Each push triggers a WhatsApp message to the customer using the template the store owner has configured for that status.
+
+## Security
+
+Every webhook from StoreTalk is signed with HMAC-SHA256. The SDK verifies signatures automatically. For manual verification:
+
+```
+X-StoreTalk-Signature: sha256=<hex>
+X-StoreTalk-Timestamp: <unix_seconds>
+X-StoreTalk-Event: <event_type>
+```
+
+Outbound callbacks from your app to StoreTalk must also be signed:
+
+```
+X-App-Signature: sha256=<hex>
+X-App-Id: <your_app_slug>
+```
+
+The SDK handles both directions. Signature computation is:
+
+```
+HMAC_SHA256(APP_SECRET, rawRequestBody) → hex lowercase
+```
+
+## Multi-tenancy
+
+A single app instance serves **all** tenants that install it. Every webhook carries `tenant_id` and `install_id` fields. Your app is responsible for isolating data by `install_id`.
+
+Use `install_id` as the tenant key throughout your database. Never trust cross-tenant data.
+
+## Debug inspector
+
+The SDK ships with a built-in debug UI. Set the `DEBUG_TOKEN` env var (or let StoreTalk sync one via admin handshake) and mount it:
+
+```typescript
+app.mountDebug(fastify, '/debug');
+```
+
+The admin can launch it from the StoreTalk admin portal with one click — no static token needed in production.
+
+## Full contract reference
+
+This guide covers the basics. For the complete contract — every event, every header, every error response — see:
+
+- **[SDK package on GitHub Packages](https://github.com/Citymapia-llc/Gm.WhatsAppManager/tree/master/sdk)** — TypeScript source and type definitions
+- **[App webhook contract spec](https://github.com/Citymapia-llc/Gm.WhatsAppManager/blob/master/docs/app-webhook-contract.md)** — canonical protocol reference
+- **[App lifecycle pipeline spec](https://github.com/Citymapia-llc/Gm.WhatsAppManager/blob/master/docs/spec-app-lifecycle-pipeline.md)** — why the two-phase model, billing implications, variable declaration
+
+## Getting listed
+
+Once your app is working:
+
+1. Deploy your webhook endpoint at a stable public URL with HTTPS
+2. Ensure `/api/manifest` returns correctly
+3. Contact the StoreTalk team with your manifest URL to begin the review process
+4. Approved apps appear in the tenant marketplace
+
+<CardGroup cols={2}>
+  <Card title="Apps overview" icon="puzzle-piece" href="/apps/apps-intro">
+    How apps fit into StoreTalk from a tenant perspective.
+  </Card>
+  <Card title="Managing apps" icon="gear" href="/apps/manage-apps">
+    What the tenant-facing management experience looks like.
+  </Card>
+</CardGroup>

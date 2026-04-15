@@ -1,0 +1,87 @@
+---
+title: "StoreTalk Apps"
+description: "Extend your WhatsApp flows with apps from the StoreTalk App Marketplace"
+---
+
+**StoreTalk Apps** are extensions that plug new capabilities into your WhatsApp chatbot flows. Instead of building everything from scratch, you install an app and drop it into any flow as an **App node** — the app handles the hard parts for you.
+
+Common examples include online stores, appointment booking, delivery tracking, and third-party integrations. When a customer reaches an App node in a flow, StoreTalk hands off to the app, which runs its logic and returns a result that the flow can act on.
+
+## How apps fit into flows
+
+```
+Customer sends a message
+        ↓
+Flow runs → reaches an App node
+        ↓
+StoreTalk calls the app
+        ↓
+App runs its logic
+(e.g. browses products, creates a booking)
+        ↓
+Flow continues on the success or failure path
+```
+
+You connect apps to flows using the **App** node in the Flow Builder. Each node is linked to one of your installed app instances. One flow can use multiple apps; one app can be used in multiple flows.
+
+## Two types of apps
+
+<CardGroup cols={2}>
+  <Card title="First-party apps" icon="store" color="#1a7f5a">
+    Built and maintained by the StoreTalk team. Free to install on any plan. These cover the most common needs — online stores, bookings, order fulfillment, and more.
+  </Card>
+  <Card title="Third-party apps" icon="puzzle-piece" color="#1a7f5a">
+    Built by independent developers using the StoreTalk App SDK. Quality is reviewed before listing. May carry a cost depending on the developer's pricing model.
+  </Card>
+</CardGroup>
+
+## Pricing models
+
+Each app listing shows one of three pricing models:
+
+| Model | What it means |
+|---|---|
+| **Free** | No charge, ever. Install and use without limits. |
+| **Monthly subscription** | A recurring charge billed each month. Cancel any time to stop. |
+| **One-time purchase** | Pay once, use forever. No recurring fees. |
+
+<Note>
+  App charges are separate from your StoreTalk plan. Your plan covers the StoreTalk platform; apps are priced by their respective developers.
+</Note>
+
+## Multiple instances of the same app
+
+You can install the same app more than once — each installation is an independent **instance** with its own name and configuration. This is useful when you run more than one operation using the same app type.
+
+For example, if you install the e-commerce store app twice:
+
+- **Instance 1:** "Main Store" — connected to your regular product catalogue
+- **Instance 2:** "Sale Items" — connected to a separate discounted catalogue
+
+Each instance appears separately in your flows, so you can send customers to the right store depending on what they asked for.
+
+## Session vs fulfillment
+
+Every app interaction has two phases:
+
+- **Session phase** — the customer is actively engaged (browsing, filling out a form). The flow waits until the session completes or times out.
+- **Fulfillment phase** — the flow has already finished, but the app continues working in the background (packing an order, confirming a booking) and sends WhatsApp updates directly to the customer.
+
+This separation means customers can keep chatting with you while an app processes their order, and they receive updates as things progress.
+
+## Finding apps
+
+Open **Apps** in the left sidebar and go to the **Marketplace** tab. You can browse by category or search by name. Selecting an app shows its full description, the actions it adds to the Flow Builder, and its pricing options.
+
+<Tip>
+  Not sure which app is right for you? Read the "What this app adds to your flows" section on each listing page — it shows exactly which new node types become available after installing.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card title="Install and manage apps" icon="gear" href="/apps/manage-apps">
+    Step-by-step guide to installing, configuring, and monitoring your installed apps.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Learn how the Flow Builder works and where App nodes fit in.
+  </Card>
+</CardGroup>
