@@ -1,0 +1,94 @@
+---
+title: "Zoom App"
+description: "Professional video meetings via Zoom — create meetings from WhatsApp flows and send one-tap join links to customers"
+---
+
+The **StoreTalk Zoom App** lets you create Zoom video meetings directly from WhatsApp flows. Customers receive a one-tap join link as a WhatsApp CTA button — no app downloads or meeting codes needed.
+
+## What it does
+
+When a customer triggers a flow that includes the Zoom action, the app creates a Zoom meeting using your credentials and sends a join link to the customer. You can track meeting status, view recordings, and get notified when meetings complete — all automated through StoreTalk.
+
+## Features
+
+- Create Zoom meetings from WhatsApp flow nodes
+- One-tap join link sent as a WhatsApp button
+- Waiting room support (configurable per tenant)
+- Cloud recording with automatic post-meeting delivery
+- Meeting history dashboard with status tracking
+- Works with BookingPro for online appointment scheduling
+
+## How a typical flow looks
+
+```
+Customer sends keyword (e.g. "consult")
+        ↓
+Flow starts → reaches the Zoom App node
+        ↓
+Customer taps "Join Meeting" button on WhatsApp
+        ↓
+Customer joins the Zoom meeting
+        ↓
+Meeting ends → flow receives completion details
+(duration, recording URL available later)
+```
+
+## Setting up
+
+<Steps>
+  <Step title="Create a Zoom Server-to-Server OAuth app">
+    Go to [marketplace.zoom.us](https://marketplace.zoom.us), sign in, and create a new **Server-to-Server OAuth** app. Copy the **Account ID**, **Client ID**, and **Client Secret**.
+  </Step>
+  <Step title="Install the Zoom app in StoreTalk">
+    Go to **Apps → Marketplace**, find **StoreTalk Zoom**, and click **Install**. Give the instance a name (e.g. "Video Consultations").
+  </Step>
+  <Step title="Configure your Zoom credentials">
+    Click **Open Dashboard** on the app's Dashboard tab. Go to **Settings** and enter your Zoom Account ID, Client ID, and Client Secret. Configure default meeting duration, waiting room, and recording preferences.
+  </Step>
+  <Step title="Create a flow">
+    In the **Flow Builder**, create a flow with a keyword trigger (e.g. "consult" or "meeting"). Add an **App** node, select your Zoom instance, and set the action to `create_meeting`.
+  </Step>
+  <Step title="Publish the flow">
+    Click **Publish**. Customers can now trigger it by sending the keyword to your WhatsApp number. They'll receive a "Join Meeting" button that opens Zoom directly.
+  </Step>
+</Steps>
+
+## Flow variables
+
+The app returns these variables after a meeting completes. Use them in downstream flow nodes with `{{variable_name}}` syntax.
+
+| Variable | Example | Description |
+|---|---|---|
+| `meeting_id` | `123456789` | Zoom meeting ID |
+| `join_url` | `https://zoom.us/j/123...` | Meeting join link |
+| `duration_minutes` | `15` | Meeting duration in minutes |
+
+## Using with BookingPro
+
+If you have both **Zoom** and **BookingPro** installed, Zoom can automatically provide meeting links for online appointments:
+
+1. Install both the Zoom app and BookingPro
+2. Go to **Settings → Service Defaults** and set Zoom as your default **meet** provider
+3. When a customer books an online service in BookingPro, they automatically receive a Zoom join link
+
+<Note>
+  If you also have **StoreTalk Meet** installed, you can choose which video provider to use as your default in the Service Defaults settings. BookingPro works with either one.
+</Note>
+
+## Meeting lifecycle
+
+| Status | When |
+|---|---|
+| **Meeting Created** | Zoom meeting created, join link sent to customer |
+| **Customer Joined** | Customer clicked the link and entered the meeting |
+| **Meeting Completed** | Meeting ended normally |
+| **Meeting Abandoned** | Session expired without anyone joining |
+| **Recording Available** | Cloud recording is ready (if auto-recording enabled) |
+
+## Pricing
+
+The Zoom app itself is **free**. You need your own Zoom account with a plan that supports the features you need (e.g. cloud recording requires Zoom Pro or higher).
+
+<Tip>
+  A free Zoom account works for basic meetings (up to 40 minutes for group calls). For longer meetings or cloud recording, upgrade to Zoom Pro.
+</Tip>
