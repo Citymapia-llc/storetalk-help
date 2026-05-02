@@ -1,0 +1,133 @@
+---
+title: "Providers and Availability"
+description: "Set up services, providers, per-provider overrides, working hours, and locations in BookingPro"
+---
+
+This page is the deep reference for the **Services**, **Providers**, **Availability**, and **Locations** tabs in the BookingPro dashboard. If you haven't installed BookingPro yet, start with the [BookingPro overview](/apps/booking-pro).
+
+## Services
+
+Open the **Services** tab and click **Add Service**. The modal has six fields:
+
+| Field | What it does |
+|---|---|
+| **Name** | What the customer sees in the storefront. Required. |
+| **Category** | Used to group services in the storefront and dashboard. Free text — defaults to "General". |
+| **Default duration (minutes)** | How long an appointment for this service takes. Defaults to 30. |
+| **Price** | Stored in paise (₹100 = 10,000 paise) but the UI accepts rupees and converts. Set to 0 for free services — the customer skips payment entirely. |
+| **Color** | Eight presets plus a custom hex picker. Used for the colour indicator on cards and on calendar events. |
+| **Online toggle** | When ON, BookingPro creates a video meeting room at booking time and sends the customer a Join link in WhatsApp. When OFF, it's an in-person service. |
+
+Services can also be marked **inactive** — they stop appearing in the storefront but stay in your data so historical bookings still resolve their service name.
+
+<Tip>
+  Use **Category** to group related services. A clinic might have "General Consultation", "Specialist", and "Tests" as categories; a salon might have "Hair", "Skin", and "Nails". The customer-facing storefront groups services by category for browsability.
+</Tip>
+
+## Providers
+
+Open the **Providers** tab and click **Add Provider**. The modal collects:
+
+| Field | What it does |
+|---|---|
+| **Name** | The provider's full name as it should appear in the storefront and reminders. Required. |
+| **Initials** | Auto-derived from the name (first letter of each word, capped at 4 characters), but editable. Shown on dashboard cards when no avatar is set. |
+| **Specialty** | Free text — "General Practice", "Pediatrics", "Senior Stylist", etc. |
+| **Color** | Twelve preset colours. Used to make appointments visually distinct on the dashboard. |
+| **Status** | One of *Active*, *On Leave*, or *Pending Invite*. Only *Active* providers appear in the customer storefront. |
+| **Email** | Used for invites and notifications. Optional today, but worth setting — future releases will support per-provider login and per-provider notifications. |
+
+### Linking providers to services
+
+Below the basic fields, the modal shows every service in your store with a checkbox. Tick each service this provider can deliver. When you check a service, two override fields appear:
+
+- **Duration override (minutes)** — leave blank to use the service's default duration
+- **Price override** — leave blank to use the service's default price
+
+This is how you handle real-world variation. A clinic might offer a 30-minute consultation at ₹500 by default, but a senior consultant takes 45 minutes and charges ₹1,000 for the same service. You set the senior consultant's overrides; everyone else uses the default.
+
+<Note>
+  Overrides are per provider, per service. They never affect what other providers charge or how long their slot is.
+</Note>
+
+### Provider statuses
+
+| Status | Visible in storefront? | Counted as Active? | Notes |
+|---|---|---|---|
+| **Active** | Yes | Yes | Default for newly added providers. |
+| **On Leave** | No | No (counted as "On Leave" on the Dashboard) | Use for vacation, sick days, sabbaticals. Existing bookings remain; new bookings can't be made until you switch back to Active. |
+| **Pending Invite** | No | No | Placeholder for providers who haven't yet accepted the invite. Treat as not-yet-onboarded. |
+
+## Availability
+
+Open the **Availability** tab to define each provider's working hours. The model is one rule per day-of-week per provider:
+
+- **Day of week** — Monday through Sunday
+- **Start time** — local time in your store's timezone
+- **End time** — local time in your store's timezone
+- **Location** — optional; only used if you have multiple Locations defined
+
+For example, Tara works Mon–Sat 10:00–18:00 IST. You'd add six rules to her — one per working day. To add a lunch break, today the simplest approach is to define two narrower rules per day (e.g. 10:00–13:00 and 14:00–18:00) — explicit multi-shift support is on the roadmap but not in the current dashboard.
+
+<Note>
+  All times are stored and shown in the timezone you set on the **Settings** tab. Customers see slot times in your timezone too — the WhatsApp confirmation message includes the timezone abbreviation (e.g. "11:20 am IST") so there's no ambiguity.
+</Note>
+
+### How availability becomes slots
+
+When a customer reaches the slot picker in the storefront:
+
+1. BookingPro looks up availability rules for the chosen provider (or all providers, if "any available")
+2. Slots are generated within those windows based on the service duration
+3. Existing bookings are subtracted to avoid double-booking
+4. The result is shown as a date calendar — only days with at least one open slot are tappable
+
+The slot calendar respects the provider's status (skips on-leave providers) and the service's duration (a 60-minute service won't show a 30-minute leftover at the end of a window).
+
+### Recurring rules and exceptions
+
+The current rule model is **weekly recurring** — every Monday at 10:00–18:00 means "every Monday forever". One-off exceptions (a provider taking next Tuesday off, or a holiday) aren't yet supported as a feature in the dashboard.
+
+Today's workarounds:
+
+- **Provider on leave for a few days** — switch their status to **On Leave** for the duration. New bookings stop, existing bookings stay (you may want to reassign them).
+- **Single-day office closure** — temporarily clear that day's rule for every provider, then re-add it after.
+
+Quick-leave bulk reschedule is on the roadmap.
+
+## Locations
+
+Multi-location businesses use the **Locations** tab to define each site. Each location can have:
+
+- A name (e.g. "Indiranagar Branch")
+- An address
+- Optional rooms (treatment rooms, courts, stations)
+
+Availability rules can be linked to a specific location, so a provider who works mornings at one branch and evenings at another can be modelled with two rules per day, one per location.
+
+If your business operates from a single place, you can ignore this tab entirely — leave the location blank on availability rules and BookingPro will simply not surface a location in customer messages.
+
+<Tip>
+  Even single-location businesses sometimes benefit from defining one location explicitly — it lets you add the address to confirmation messages via the `{{location_name}}` placeholder, which is much friendlier than "your appointment is confirmed" with no address.
+</Tip>
+
+## Reassigning a booking
+
+Bookings can be moved to a different provider after they've been confirmed. From the **Bookings** tab, expand the booking row and click **Reassign**. The modal:
+
+- Shows a dropdown of currently-Active providers (excluding the one already assigned)
+- Has an optional **reason** field (free text — captured in the activity log)
+- Has a **notify customer** toggle — defaults to ON. When on, the customer receives a WhatsApp message telling them about the new provider. The appointment time stays the same.
+
+The Reassign button only appears when you have **two or more Active providers** — it's hidden on single-provider stores where reassignment doesn't make sense.
+
+If the booking is for an online service, the existing meeting room is **kept**. The customer's join link still works; only the human on the other end of the call is different. If you'd rather give the customer a new link, cancel the booking and create a fresh one instead.
+
+<CardGroup cols={2}>
+  <Card title="BookingPro overview" icon="calendar" href="/apps/booking-pro">
+    The customer journey, payment flow, video meetings, and lifecycle tour.
+  </Card>
+  <Card title="Messages and reminders" icon="message" href="/apps/booking-pro-messages">
+    Customise the WhatsApp wording for confirmations, reminders, and lifecycle events.
+  </Card>
+</CardGroup>

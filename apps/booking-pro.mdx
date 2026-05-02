@@ -1,0 +1,189 @@
+---
+title: "BookingPro"
+description: "Run an appointment-booking business on WhatsApp — services, providers, payments, reminders, video meetings"
+---
+
+**StoreTalk BookingPro** turns any service business into a WhatsApp-first booking platform. Customers browse your services, pick a provider and a time slot, pay if needed, and receive WhatsApp confirmations and reminders — all without leaving the chat for more than a few taps.
+
+It's used by clinics, salons, fitness studios, consultants, tutors, and anyone who books appointments. The app is industry-agnostic — every tenant picks their own labels for "provider", "customer", and "room" so the dashboard reads naturally for your business.
+
+## What customers see
+
+When a customer messages you with one of your trigger keywords (e.g. *"book appointment"*, *"doctor"*), they're taken through a short web flow:
+
+<Steps>
+  <Step title="Pick a service">
+    The customer sees your published services with price, duration, and an "Online" badge if it's a video appointment.
+  </Step>
+  <Step title="Pick a provider">
+    Either a specific person or "any available". If only one provider can deliver the chosen service, this step auto-skips.
+  </Step>
+  <Step title="Pick a slot">
+    A calendar shows the next available days; tapping a day reveals the open time slots for the chosen provider, in your store's timezone.
+  </Step>
+  <Step title="Confirm and pay">
+    The customer reviews their booking, optionally adds a note, and pays via Razorpay if the service has a price. Free services skip payment entirely.
+  </Step>
+  <Step title="Receive WhatsApp confirmation">
+    A confirmation message lands in WhatsApp with the booking details and a branded "Open booking" link that becomes a Join button 15 minutes before the start time.
+  </Step>
+</Steps>
+
+Reminders go out automatically before the appointment (24 hours and 1 hour by default — you can customise this).
+
+## Installing and configuring
+
+<Steps>
+  <Step title="Install from Marketplace">
+    Open Apps → Marketplace, find **StoreTalk BookingPro**, and click Install. The app is free.
+  </Step>
+  <Step title="Set up Settings">
+    Open the app, go to **Settings**, and set:
+    - **Timezone** — appointments are stored and displayed in this zone
+    - **Default language** — the locale used for customer messages (English by default; we also ship Hindi, Malayalam, Tamil, Kannada, and Telugu)
+    - **Industry labels** — what to call providers, customers, and rooms in your dashboard. "Doctor / Patient / Room" for clinics, "Stylist / Client / Station" for salons, etc.
+    - **Scheduling rules** — buffer time, advance days allowed, minimum notice, "any provider" toggle
+    - **Theme color** — applied to the customer-facing storefront
+    - **Reminders** — toggle on/off and pick offsets (presets: 24h, 4h, 1h, 30 min — plus custom)
+  </Step>
+  <Step title="Pick a video meeting provider (if you offer online appointments)">
+    On the Settings tab, in the **Services Used** section, pick which app fulfils the `meet` service — StoreTalk Meet or StoreTalk Zoom. See the [Platform Services guide](/apps/platform-services) if this is your first time configuring it.
+  </Step>
+  <Step title="Add your services">
+    Open **Services** and add each one. See the [Providers and availability guide](/apps/booking-pro-availability) for the full list of fields.
+  </Step>
+  <Step title="Add your providers">
+    Open **Providers** and add each person who delivers services. Tick which services they can deliver and set per-provider price or duration overrides where they differ from the service default.
+  </Step>
+  <Step title="Set provider availability">
+    Open **Availability** and define each provider's working hours by day of week. This drives the slot calendar customers see.
+  </Step>
+  <Step title="Wire BookingPro into a flow">
+    In your Flow Builder, add an **App** node, pick BookingPro, and connect it on the success and failure paths. Set the flow's trigger keywords (defaults like *bookingpro*, *doctor*, *clinic*, *schedule appointment* work as a starting point).
+  </Step>
+</Steps>
+
+## Dashboard tour
+
+The dashboard has eight tabs, in this order:
+
+### Dashboard
+
+The default landing tab. Four KPI cards at the top — **Today's Bookings**, **Upcoming (7 days)**, **Active Providers**, **On Leave**. Below are two panels: **Today's Schedule** (up to 8 upcoming appointments with time, customer, service, and provider) and **Provider Load Today** (active providers with their appointment counts).
+
+### Bookings
+
+Every booking, filterable by status. Two views: **Upcoming** and **All**. Status filters: confirmed, completed, cancelled, no-show, needs-reschedule.
+
+For each booking you can:
+- **Complete** — mark it as completed (terminal status)
+- **No Show** — mark the customer as a no-show (terminal status)
+- **Cancel** — cancel the booking (terminal status; reminders are auto-cancelled)
+- **Reassign** — move the booking to a different provider, with optional reason and a "notify customer" toggle. Only available when you have two or more active providers.
+
+Each booking row expands to show its activity log: created, status changed, reassigned, with timestamps.
+
+### Services
+
+The catalog of services you offer. Grouped by category, each card shows the colour indicator, duration, price, and an "Online" badge if customers should expect a video meeting. Add, edit, or delete via the modal. See [Providers and availability](/apps/booking-pro-availability) for the field reference.
+
+### Providers
+
+The people who deliver your services, grouped by status — Active, On Leave, Pending Invite. Each provider card shows their name, initials, specialty, email, and status pill. The edit modal also exposes per-service overrides for price and duration.
+
+### Availability
+
+Per-provider working-hours editor. Add one rule per day of week per provider — for example, "Tara: Mon–Sat 10:00–18:00". This is what powers the slot calendar customers see when booking.
+
+### Locations
+
+For multi-site businesses. Define each location, optionally assign rooms to it, and link availability rules to specific locations. Skip this tab entirely if you operate from one place — locations are optional.
+
+### Messages
+
+The wording of every WhatsApp message BookingPro sends, editable per locale. See the [Messages and reminders guide](/apps/booking-pro-messages) for the full breakdown.
+
+### Settings
+
+Store-level configuration: timezone, default language, scheduling constraints, industry labels, theme colour, reminder offsets, and the **Services Used** picker (where you choose your `payment` and `meet` providers). Most things you'll set once at install time and rarely change.
+
+## Payments
+
+If a service has a non-zero price, the customer pays at the Confirm step using whichever payment app you've installed (today, **StoreTalk Razorpay**). On success, the booking moves to *confirmed* and reminders are scheduled. On failure, the customer sees the error and can retry — the booking stays in pending until they complete payment or abandon.
+
+If you haven't installed a payment app, BookingPro **degrades gracefully**: services with a price still appear, but the Pay step is skipped and the booking confirms as a free booking. This is by design — see [Platform Services](/apps/platform-services) for how the fallback works.
+
+<Note>
+  **Known issue (parked):** On staging we've seen Razorpay's UPI modal occasionally not auto-close after a successful payment, requiring the customer to refresh. Card and netbanking are unaffected. We're tracking this and will ship a fix in a future release.
+</Note>
+
+## Video meetings
+
+When a service has the **Online** toggle enabled, BookingPro creates a video meeting room **at booking time** — not when the customer clicks Join. The meeting URL is generated by your chosen `meet` provider (Meet or Zoom) and stored on the booking.
+
+The customer doesn't get a raw `zoom.us` or `meet.google.com` link in WhatsApp. Instead they get a branded `/booking/:id/join` landing page that:
+
+- Shows their booking details (provider, service, time, location, notes)
+- Counts down to the start time
+- Reveals a **Join meeting** button **15 minutes before the start time**
+- Lets you swap the underlying meeting URL on the backend without leaving a dead link in the customer's chat history
+
+When a booking is cancelled, completed, or marked no-show, BookingPro tells the `meet` provider to cancel the room — so you don't accumulate stranded meeting rooms. Reassigning a booking to a different provider keeps the same room (the room name may go stale, but it's not worth a round-trip to recreate).
+
+## The booking lifecycle
+
+Every booking moves through a defined sequence of statuses, split into two phases:
+
+| Phase | Status | What it means | Sends a WhatsApp message? |
+|---|---|---|---|
+| Session | `selecting` | Customer is in the storefront picking a service / slot | No |
+| Session | `booking_confirmed` | Booking placed (and paid for, if paid) | Yes — confirmation with join link |
+| Session | `booking_abandoned` | Customer left without completing | No |
+| Fulfillment | `reminder_sent` | Scheduled reminder fired | Yes — reminder template |
+| Fulfillment | `appointment_starting` | Approaching start time (online services) | Optional |
+| Fulfillment | `completed` | Service delivered | Yes — depends on your template |
+| Fulfillment | `no_show` | Customer didn't turn up | Yes — depends on your template |
+| Fulfillment | `cancelled` | Booking cancelled (by customer or staff) | Yes — depends on your template |
+| Fulfillment | `rescheduled` | Time changed without cancelling | Yes — new time |
+
+The wording of each lifecycle message is editable. See [Messages and reminders](/apps/booking-pro-messages) for how.
+
+## What's available today vs coming soon
+
+We're shipping BookingPro in phases. The current build covers everything most service businesses need to start taking bookings; a few items are deliberately deferred.
+
+**Available today**
+
+- Full dashboard for bookings, services, providers, availability, locations, settings, messages
+- Per-provider price and duration overrides
+- Customer storefront with service / provider / slot picker and Razorpay payment
+- Branded join landing page with countdown
+- Online appointments via StoreTalk Meet or Zoom, with eager room creation and lifecycle cleanup
+- WhatsApp reminders with configurable offsets
+- Phase 1 message i18n — six locales, per-tenant overrides
+- Provider reassignment with optional customer notification
+- Industry-adaptable labels
+
+**Coming soon**
+
+- Customer-facing reschedule and cancel buttons on the join landing page
+- Phase 2 i18n — per-locale lifecycle messages without needing the JSON editor
+- Phase 3 i18n — storefront SPA translation and customer-locale auto-capture
+- Capacity planning views (month heatmap, utilisation reports)
+- Quick-leave bulk reschedule when a provider is unexpectedly out
+- Recurring availability rules
+
+<CardGroup cols={2}>
+  <Card title="Providers and availability" icon="users" href="/apps/booking-pro-availability">
+    The full reference for services, providers, per-provider overrides, and availability rules.
+  </Card>
+  <Card title="Messages and reminders" icon="message" href="/apps/booking-pro-messages">
+    Customise the WhatsApp wording for every lifecycle event, per locale.
+  </Card>
+  <Card title="Manage installed apps" icon="gear" href="/apps/manage-apps">
+    Tour of the Settings tab, Activity log, and other apps-page mechanics.
+  </Card>
+  <Card title="Platform Services" icon="puzzle-piece" href="/apps/platform-services">
+    How BookingPro plugs into payment and video-meeting providers.
+  </Card>
+</CardGroup>
