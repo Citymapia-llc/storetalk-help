@@ -127,6 +127,14 @@
             "apps/e-commerce-delivery-pickup"
           ]
         },
+        {
+          "group": "BookingPro",
+          "pages": [
+            "apps/booking-pro",
+            "apps/booking-pro-availability",
+            "apps/booking-pro-messages"
+          ]
+        },
         "apps/building-apps"
       ]
     },

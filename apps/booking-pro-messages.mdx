@@ -1,0 +1,215 @@
+---
+title: "Messages and Reminders"
+description: "Customise the WhatsApp wording BookingPro sends to your customers, in any of six languages"
+---
+
+Every WhatsApp message BookingPro sends is editable. The wording you pick reaches every customer, so it's worth a few minutes to make these read like *your* business and not a generic SaaS.
+
+This page covers:
+1. The **Messages** tab — per-locale templates for the messages BookingPro sends most often
+2. **Reminders** — how the scheduled "your appointment is tomorrow" notifications work
+3. **Lifecycle status messages** — the messages tied to each booking status (confirmed, cancelled, etc.)
+
+If you're new to BookingPro, start with the [BookingPro overview](/apps/booking-pro).
+
+## The Messages tab
+
+Open the **Messages** tab in the BookingPro dashboard. You'll see:
+
+- A **locale selector** at the top
+- A list of **message keys** on the left
+- An **editor panel** on the right with the template body and a list of available variables
+
+### Supported locales
+
+BookingPro ships with six languages today:
+
+- **English** (`en`) — the canonical fallback
+- **हिन्दी** (`hi`) — Hindi
+- **മലയാളം** (`ml`) — Malayalam
+- **தமிழ்** (`ta`) — Tamil
+- **ಕನ್ನಡ** (`kn`) — Kannada
+- **తెలుగు** (`te`) — Telugu
+
+Pick a locale to customise the wording for customers who prefer that language. Your store's **default language** (set on the Settings tab) determines which locale BookingPro uses unless a customer's preferred language is detected — Phase 3 i18n will add automatic per-customer locale detection later this quarter.
+
+### How resolution works
+
+When BookingPro needs to render a message, it walks this chain:
+
+```
+1. Your override for this messageKey + the requested locale
+2. Your override for this messageKey + English
+3. The bundled translation for the requested locale
+4. The bundled English fallback
+5. (If everything is empty) — the message is dropped and a warning is logged
+```
+
+In practice this means:
+
+- **You don't have to translate everything.** If you only customise the English version, customers in other locales fall through to the bundled translation, which is already a sensible default.
+- **You don't have to set a default.** Leaving a message untouched means the bundled English text is used.
+- You only need to fill a non-English locale row when you want wording specific to that language for that key.
+
+### Editing a template
+
+Pick a message key on the left, then edit the textarea on the right. Use the **click-to-insert** variable buttons under the editor to drop placeholders into the text. Variables differ per message — the editor only shows the ones available for the selected key.
+
+Save persists the change for that locale; bookings created after the save use the new text immediately. Customers who already received the previous wording aren't affected.
+
+<Tip>
+  Keep templates short and specific. WhatsApp's text-message style favours conversational tone over marketing copy. The first line should usually be the most important fact ("Your appointment is confirmed for tomorrow at 10:00 IST") with everything else as supporting detail.
+</Tip>
+
+### Reminder template
+
+Key: `reminder.default`
+
+This is the message customers receive at each reminder offset before their appointment. The default English template is something like:
+
+> Reminder: your appointment with {{provider_name}} for {{service_name}} is on {{appointment_date}} at {{appointment_time}}. Open your booking: {{booking_url}}
+
+Variables available:
+
+| Variable | Value |
+|---|---|
+| `{{provider_name}}` | The provider's name |
+| `{{service_name}}` | The service name |
+| `{{appointment_date}}` | Date in your store's timezone, formatted naturally |
+| `{{appointment_time}}` | Time in your store's timezone, with the timezone label appended (e.g. "11:20 am IST") so customers in other zones aren't confused |
+| `{{location_name}}` | Location name (if you have Locations configured) |
+| `{{meeting_link}}` | Branded join link for online services; empty for in-person services |
+| `{{booking_url}}` | Branded `/booking/:id/join` landing page — recommend always including this; it's the customer's "open my booking" entry point |
+
+### Reassign template
+
+Key: `reassign.notification`
+
+Sent to the customer when you reassign their booking to a different provider on the **Bookings** tab (only fires when you keep the **notify customer** toggle on).
+
+Variables: includes `{{old_provider_name}}` and `{{new_provider_name}}` plus the standard appointment variables.
+
+### Notify and Prompt fallbacks
+
+Keys: `notify.default` and `prompt.default`
+
+These are the safety-net wordings used if the StoreTalk Event Bindings system has nothing more specific to send. See [Event Bindings](/apps/event-bindings) for how the bindings system decides what to use — these two keys are the bottom of that resolution chain.
+
+In most stores you can leave them as the bundled defaults; they only fire when something has been misconfigured upstream.
+
+## Reminders
+
+Reminders are scheduled WhatsApp messages that go out before each appointment. They're configured on the **Settings** tab, not the Messages tab — Settings controls *when* they fire, Messages controls *what they say*.
+
+### Default offsets
+
+Out of the box, BookingPro schedules **two reminders per booking**:
+
+- **24 hours** before (1440 minutes)
+- **1 hour** before (60 minutes)
+
+### Configuring offsets
+
+In Settings, find the **Reminders** section. There are four preset toggle buttons (24h, 4h, 1h, 30 min) and a custom-offset input. Pick any combination — most businesses settle on 1–3 reminders.
+
+You can also turn reminders off entirely with the master **Reminders enabled** toggle.
+
+### How reminders interact with bookings
+
+- Reminders are scheduled when the booking is **confirmed** (after payment, or immediately for free bookings)
+- They're scheduled via the StoreTalk Scheduler service so they survive app restarts and Core deploys
+- An offset that's already in the past at booking time is silently skipped — no point reminding the customer about an appointment that starts in 30 minutes if your offset is 1 hour
+- All reminders for a booking share an identifier, so cancelling, completing, or no-showing the booking **automatically cancels every pending reminder** in one call
+
+### What a reminder looks like at runtime
+
+When a reminder fires:
+1. The Scheduler hits Core's `/api/app-events/scheduled-fire` endpoint with the booking context
+2. Core fires a `notify` event for BookingPro's install
+3. BookingPro renders `reminder.default` for the customer's locale, substituting in the booking-specific variables
+4. Core sends the resulting WhatsApp message to the customer
+
+If the binding for `notify` is set to **Start a flow** instead of **Send fallback template** (see [Event Bindings](/apps/event-bindings)), the flow runs instead — useful if you want the reminder to also ask "are you still planning to attend?" with Yes / No buttons.
+
+## Lifecycle status messages
+
+Beyond reminders, BookingPro sends messages tied to specific points in the booking lifecycle — confirmation, cancellation, completion, etc. The full list:
+
+| Status | Phase | Sent when |
+|---|---|---|
+| `booking_confirmed` | Session | Booking is placed (and paid for, if paid) |
+| `reminder_sent` | Fulfillment | Each scheduled reminder fires |
+| `appointment_starting` | Fulfillment | Approaching start time, online services |
+| `completed` | Fulfillment | You mark the booking complete |
+| `no_show` | Fulfillment | You mark the customer as a no-show |
+| `cancelled` | Fulfillment | The booking is cancelled |
+| `rescheduled` | Fulfillment | The appointment time changes (Phase B) |
+
+The wording for each status lives on the **App node** of your BookingPro flow in the Flow Builder — specifically in the node's `statusHooks.<status>.message` field.
+
+### Editing lifecycle messages today
+
+The Flow Builder doesn't yet have a dedicated UI panel for `statusHooks`. Until that ships, edit them via the **JSON editor** button in the flow toolbar:
+
+<Steps>
+  <Step title="Open your BookingPro flow">
+    Apps → BookingPro → Flows tab → click the flow that handles BookingPro events. (Default trigger keywords: *bookingpro*, *doctor*, *clinic*, *schedule appointment*.)
+  </Step>
+  <Step title="Open the JSON editor">
+    With the flow in **Draft** view, click the **JSON** button in the toolbar (next to Preview). The modal shows the raw `nodes` and `edges` arrays.
+  </Step>
+  <Step title="Find the App node and edit statusHooks">
+    Look for the node with `"type": "app"` in the JSON. It will have a `statusHooks` object keyed by status name. Edit the `message` field for the status you want to change. Variables work the same as in the Messages tab — `{{provider_name}}`, `{{appointment_time}}`, `{{meeting_link}}`, `{{booking_url}}`, etc.
+  </Step>
+  <Step title="Apply, then Save Draft, then Publish">
+    Apply loads the change into the editor canvas. Save Draft persists it. Publish makes it live. Existing bookings already in flight aren't affected; new lifecycle transitions use the new wording.
+  </Step>
+</Steps>
+
+<Note>
+  Phase 2 i18n will move the lifecycle messages into the Messages tab so you can edit them per locale without touching the JSON editor. Until then, the JSON editor edits a single message per status, in your store's default language.
+</Note>
+
+### When `meeting_link` is populated
+
+Two placeholders are conditionally populated on the `booking_confirmed` confirmation message:
+
+- `{{meeting_link}}` — populated only for **online** services (the **Online toggle** is on for the service). Empty for in-person services.
+- `{{booking_url}}` — always populated for confirmed bookings; points to the branded `/booking/:id/join` landing page.
+
+If your confirmation template includes both lines, in-person services will render the `meeting_link` line as empty. To clean this up, either define separate templates for online and in-person services in the Messages tab, or include the meeting link conditionally — wrap it in Handlebars-style `{{#if meeting_link}}...{{/if}}` syntax (support is on the roadmap).
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="My customer didn't receive a reminder">
+    Three things to check:
+    1. **Reminders enabled** — Settings tab → Reminders → master toggle is on
+    2. **Offset hadn't already passed** — if you scheduled a 1-hour reminder for an appointment that was confirmed 30 minutes before start, the offset was in the past and got skipped silently
+    3. **Activity log** — Apps → BookingPro → Activity tab. The reminder fire is logged with its outcome. If it shows Failed, expand the row for the underlying error from WhatsApp Cloud API
+  </Accordion>
+  <Accordion title="The reminder text is showing literal {{provider_name}}">
+    The variable name has to match exactly. Click the **Insert** buttons under the editor instead of typing — those are guaranteed correct. Misspellings render as literal text.
+  </Accordion>
+  <Accordion title="Hindi customers are still seeing English">
+    Two reasons. Either you haven't filled in the Hindi version of that key (it falls back to bundled English), or the customer's locale isn't being detected (Phase 3 i18n — coming). Today, the locale used is your store's **default language** unless overridden. Set it to Hindi if your customer base is primarily Hindi-speaking.
+  </Accordion>
+  <Accordion title="The {{meeting_link}} line is blank in confirmations for in-person services">
+    Expected. The placeholder is only filled when the service has the **Online** toggle on. To avoid the empty line, either remove `{{meeting_link}}` from your confirmation template, or maintain separate confirmation templates for online and in-person services.
+  </Accordion>
+  <Accordion title="I edited a lifecycle message in the JSON editor, but the change didn't take effect">
+    The JSON editor loads the change into the canvas; you still need to **Save Draft** and then **Publish** the flow for it to go live. Existing bookings that have already passed the lifecycle status keep the old text.
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="BookingPro overview" icon="calendar" href="/apps/booking-pro">
+    The customer journey, payment flow, video meetings, and lifecycle tour.
+  </Card>
+  <Card title="Providers and availability" icon="users" href="/apps/booking-pro-availability">
+    Set up services, providers, per-provider overrides, and working hours.
+  </Card>
+  <Card title="Event Bindings" icon="bolt" href="/apps/event-bindings">
+    The platform-wide system that decides what WhatsApp does when an app fires an event.
+  </Card>
+</CardGroup>
