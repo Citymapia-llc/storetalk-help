@@ -45,19 +45,20 @@ A summary of activity for the last 30 days:
 | Repeat users | Customers who used it more than once |
 | Revenue generated | Total value of orders or payments processed through this app |
 
-If the app has its own management interface (for example, a store admin panel), an **Open Dashboard** button appears at the top of this tab.
+If the app has its own management interface (for example, a store admin panel), an **Open Dashboard** button appears in the right panel.
+
+### Settings
+
+Where you tailor the app's behaviour to your business. The tab is split into a few sections, and you'll only see the ones that apply to the app you've installed:
+
+- **Services Provided** — appears on apps that fulfil platform services (a payment gateway, a video-meeting provider, etc.). Toggle whether your store offers each service and whether this app should be the default provider.
+- **Services Used** — appears on apps that consume platform services. Pick which provider should fulfil each dependency. For example, a booking app may need a video-meeting provider — you choose between StoreTalk Meet and StoreTalk Zoom here.
+- **Configuration** — fields the app developer declared in its manifest (API keys, business hours, regional settings). Required fields are marked with a red asterisk; the app will not function until they're filled in. Changes save immediately.
+- **Event Bindings** — for every event the app can fire, you decide what should happen on WhatsApp: send an editable fallback message, start a published flow, or drop silently. See the [Event Bindings guide](/apps/event-bindings) for the full walkthrough.
 
 ### Activity
 
-A session timeline chart and an event-by-event log of everything that happened inside each session — useful for understanding where customers drop off.
-
-### Webhooks
-
-A full log of every HTTP request and response between StoreTalk and the app, in both directions. Expand any row to see the exact request payload and the app's response. Use this tab when debugging unexpected behaviour.
-
-### Orders
-
-All orders placed through this app instance, including status and value. This tab only appears for apps that process orders.
+A stats summary plus a unified event-by-event log of everything that happened inside the app — sessions, fulfilment events, and the underlying webhook traffic between StoreTalk and the app. Expand any row for the full request and response payloads. Use this tab when something behaved unexpectedly.
 
 ### Contacts
 
