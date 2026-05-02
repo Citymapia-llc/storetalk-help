@@ -1,0 +1,122 @@
+---
+title: "Platform Services"
+description: "How StoreTalk apps share capabilities — payment gateways, video meetings, and more"
+---
+
+Some things — taking a payment, hosting a video meeting — aren't something every app should reinvent. StoreTalk lets one app provide a capability that any other app can use. We call these capabilities **platform services**.
+
+For example, when a booking app needs to charge a customer, it doesn't ship its own payment gateway. It asks StoreTalk for "the payment service", and whichever payment app you've installed (today, the StoreTalk Razorpay app) handles the charge. Swap the payment app later and every other app keeps working — you don't have to reconfigure each one.
+
+## Provider apps and consumer apps
+
+Every platform service has two sides:
+
+- **Provider apps** declare that they fulfil a service. The Razorpay app provides `payment`. StoreTalk Meet and StoreTalk Zoom both provide `meet`.
+- **Consumer apps** declare that they use a service. BookingPro uses `payment` and `meet`.
+
+A single app can be both. An e-commerce app might consume `payment` (to charge for orders) while providing its own service back to other apps.
+
+## Services available today
+
+| Service | What it does | Available providers |
+|---|---|---|
+| **Payment Gateway** (`payment`) | Collect online payments from customers — UPI, cards, net banking | StoreTalk Razorpay |
+| **Video Meeting** (`meet`) | Create video meeting rooms and send the join link to the customer | StoreTalk Meet, StoreTalk Zoom |
+
+More services will be added over time. The list of services your installed apps can use is always shown on each app's Settings tab.
+
+## Where you configure this
+
+Open any installed app and go to **Settings**. Depending on whether the app is a provider, a consumer, or both, you'll see one or both of these sections.
+
+### Services Provided
+
+Visible on apps that fulfil a service (Razorpay, StoreTalk Meet, StoreTalk Zoom). Each row shows one service the app can provide, with two controls:
+
+- **Enable toggle** — turn the service on or off for your store. Off means consumer apps will treat this provider as unavailable.
+- **Set as default** — when more than one installed app provides the same service (e.g. you have both Meet and Zoom installed), this picks which one consumer apps should use.
+
+### Services Used
+
+Visible on apps that consume a service (BookingPro, your e-commerce store, etc.). Each row shows one service the app needs, with a **provider dropdown** that lists every installed app capable of fulfilling it. Pick the one you want.
+
+<Note>
+  The provider choice is **per-store, not per-app**. Setting StoreTalk Meet as the `meet` provider on BookingPro's Settings tab also makes it the default for any other app that uses the `meet` service. Change it once and every consumer is updated.
+</Note>
+
+## How StoreTalk picks a provider
+
+When a consumer app needs a service, StoreTalk resolves the provider in this order:
+
+```
+1. Did you set a default provider for this service?
+   → use that one (if it's installed and active)
+2. Otherwise, is there exactly one installed app that provides the service?
+   → use it automatically
+3. Otherwise (multiple installed providers, no default)
+   → return an error to the consumer app
+4. Otherwise (no providers installed)
+   → return an error to the consumer app
+```
+
+## What happens when no provider is configured
+
+If a consumer app asks for a service that nothing on your store provides, StoreTalk returns a clear error. Well-built apps **degrade gracefully** when this happens — they don't crash, they just skip the optional step.
+
+For example, BookingPro consumes both `payment` and `meet`:
+
+- **No `payment` provider** — BookingPro creates the booking as a free booking. The customer skips the payment step entirely.
+- **No `meet` provider** — BookingPro confirms the booking but doesn't include a meeting link in the WhatsApp message. Suitable for in-person services.
+
+This means **uninstalling a provider app rarely breaks anything** for your customers. Worst case, an optional feature stops appearing.
+
+## Switching providers
+
+Switching between providers is just a dropdown change. Every consumer that depends on the service picks up the new provider on the next request.
+
+<Tip>
+  Switching providers does not migrate existing data. A booking created with Zoom keeps its Zoom link; new bookings will use the newly-selected provider. Existing meeting rooms continue to work until they're cancelled.
+</Tip>
+
+## Common configurations
+
+<CardGroup cols={2}>
+  <Card title="Single provider — let it auto-resolve" icon="check" color="#1a7f5a">
+    With one payment app installed and one video meeting app installed, you don't need to set anything. StoreTalk picks the only available provider for each service.
+  </Card>
+  <Card title="Two providers — pick a default" icon="list" color="#1a7f5a">
+    With both Meet and Zoom installed, set one as the **default** in either app's Settings tab. Every consumer that needs a meeting will use it.
+  </Card>
+  <Card title="Disable a service temporarily" icon="circle-minus" color="#1a7f5a">
+    Use the **Enable** toggle in Services Provided to turn off a service without uninstalling the app. Consumers fall back to "no provider" behaviour.
+  </Card>
+  <Card title="Test before you commit" icon="play" color="#1a7f5a">
+    Make a real booking on a flow that uses payments — the activity log on the consumer app shows whether the service request succeeded and which provider handled it.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="My booking app says &quot;no provider configured for payment&quot;">
+    Open Apps → My Apps → your payment app → Settings, and confirm the **Enable** toggle on Payment Gateway is on. If you have multiple payment apps installed, also click **Set as default** on the one you want to use.
+  </Accordion>
+  <Accordion title="I switched the meet provider but old bookings still use the old one">
+    Existing meeting rooms keep the link they were created with. Only **new** bookings use the new provider. If you want to migrate existing bookings, you'd need to cancel and recreate them — that's by design, since the customer already has the old link in their chat.
+  </Accordion>
+  <Accordion title="The provider dropdown on Services Used is empty">
+    No installed apps provide that service yet. Open the Marketplace and install one — for example, StoreTalk Meet for video meetings, or StoreTalk Razorpay for payments.
+  </Accordion>
+  <Accordion title="A service request is timing out">
+    The provider app may be down. Check the consumer app's **Activity** tab — failed service requests appear there with the error message returned by the provider.
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Manage installed apps" icon="gear" href="/apps/manage-apps">
+    Walkthrough of every tab on the app management page, including Settings.
+  </Card>
+  <Card title="Event Bindings" icon="bolt" href="/apps/event-bindings">
+    Decide what WhatsApp does when an installed app fires an event.
+  </Card>
+</CardGroup>
