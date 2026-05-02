@@ -157,6 +157,115 @@ await app.completeFulfillment(session, 'delivered', {
 
 Each push triggers a WhatsApp message to the customer using the template the store owner has configured for that status.
 
+## Service contracts
+
+Some capabilities are too universal to bake into every app — taking a payment, hosting a video meeting, listing on a marketplace. StoreTalk exposes them as **service contracts**. Your app declares either that it provides one (you're a payment gateway, a video host, etc.) or that it consumes one (you need payments, you need meetings) — and Core wires the two sides together at runtime.
+
+Two contracts ship today:
+
+| Contract slug | Purpose |
+|---|---|
+| `payment` | Collect online payments — UPI, cards, net banking |
+| `meet` | Create and cancel video-meeting rooms, return a join URL |
+
+For the storeowner's view of how providers and consumers compose, see the [Platform Services](/apps/platform-services) guide.
+
+### Declaring a contract in your manifest
+
+A **provider** lists what it offers under `serviceContracts`:
+
+```typescript
+// apps/storetalk-meet/src/routes/manifest.ts
+const app = new StoreTalkApp({
+  slug: 'storetalk-meet',
+  serviceContracts: ['meet'],
+  // ...
+});
+```
+
+A **consumer** lists what it needs under `serviceDependencies`:
+
+```typescript
+// apps/booking-pro/src/routes/manifest.ts
+const app = new StoreTalkApp({
+  slug: 'booking-pro',
+  serviceDependencies: ['payment', 'meet'],
+  // ...
+});
+```
+
+Both fields appear in the manifest as plain string arrays. The portal reads them to render the **Services Provided** and **Services Used** sections of the Settings tab.
+
+### Calling a service (consumer side)
+
+```typescript
+const result = await app.requestService('payment', {
+  installId: install.id,
+  amount: 50000,        // in paise
+  currency: 'INR',
+  description: 'Booking #4821',
+});
+
+// result.data is whatever the provider returned synchronously
+const { orderId, key } = result.data;
+```
+
+`requestService(contractSlug, payload)` is a single HMAC-signed call to Core. Core resolves the provider (see below), forwards a `service.request` webhook to that provider, waits for its synchronous response (10s timeout), and returns the body to you as `result.data`.
+
+For long-running operations, the provider may also send a follow-up `service.response` webhook. Subscribe to it from the consumer side:
+
+```typescript
+app.onServiceResponse('payment', async (event) => {
+  // event.requestId, event.deliveryId, event.status, event.data
+});
+```
+
+### Handling a service request (provider side)
+
+```typescript
+app.registerServiceHandler('meet', async (event) => {
+  // event.payload was sent by the consumer
+  const room = await createRoom(event.payload);
+  return { data: { joinUrl: room.url, roomId: room.id } };
+});
+```
+
+What you `return` becomes the consumer's `result.data`. To respond asynchronously after some background work, store the `event.delivery_id` and call `respondService(deliveryId, status, data)` later.
+
+### How Core picks a provider
+
+When more than one app provides the same contract on a tenant (e.g. both StoreTalk Meet and StoreTalk Zoom are installed):
+
+1. The tenant's explicit default for that contract wins, if set
+2. Otherwise, if exactly one provider is installed, it's used automatically
+3. Otherwise the request fails with a clear error
+
+The default is **per-tenant, per-contract** — set in the portal's Services Provided section, stored in `TenantServiceDefault`. Consumer apps don't pick a provider; Core does.
+
+### Graceful degradation
+
+If no provider is installed or all are disabled, `requestService()` rejects with a descriptive `InvalidOperationException`. **Catch it and degrade gracefully** rather than failing the whole flow — the user-facing docs promise this, and well-built apps deliver it:
+
+```typescript
+try {
+  await app.requestService('payment', { ... });
+  return 'payment_collected';
+} catch (err) {
+  // No payment provider configured — proceed as a free booking
+  return 'free_booking';
+}
+```
+
+BookingPro, for example, completes bookings as free when `payment` is unavailable, and skips meeting-link generation when `meet` is unavailable.
+
+### Deploy ordering — non-negotiable when extending a contract
+
+Core does **not** enforce a deploy order at install time, but versioning a contract is fragile. **When you add a new action, field, or behaviour to an existing contract, ship the provider first, then the consumer.**
+
+A real example from PR #99 (booking-pro + StoreTalk Meet, 2026-04-28): we extended the `meet` contract with `action: 'cancel'`. The provider apps (StoreTalk Meet, StoreTalk Zoom) shipped first to start accepting the new action. Only then did booking-pro start emitting it. Had it shipped the other way, the consumer's `cancel` request would have hit an old provider that didn't recognise the action — and a Zoom handler that defaults to "create on unknown action" would have spawned a junk room every time a customer cancelled.
+
+Apply the same rule for any breaking shape change to the request or response payload. New optional fields are safe in either direction; new required fields and new action verbs are not.
+
 ## Security
 
 Every webhook from StoreTalk is signed with HMAC-SHA256. The SDK verifies signatures automatically. For manual verification:
