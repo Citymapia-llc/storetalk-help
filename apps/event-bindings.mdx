@@ -1,0 +1,141 @@
+---
+title: "Event Bindings"
+description: "Decide what WhatsApp does when your installed app fires an event"
+---
+
+Apps don't talk to your customers on their own. When an installed app wants to send a customer a message — a confirmation, a question, an out-of-stock alert — it **fires an event** to StoreTalk. The Event Bindings section is where you decide what should happen on the WhatsApp side every time an event fires.
+
+You'll find it inside any installed app:
+
+**Apps → My Apps → pick an app → Settings tab → Event Bindings**
+
+## Why bindings exist
+
+Apps are written once but used by many businesses. The app developer cannot know whether you want a plain "your order is ready" text, a richer template, or a multi-step chatbot flow that also asks for delivery instructions. By picking a **handler** for each event, you make that decision for your store — without changing a line of code in the app.
+
+## What events look like
+
+Every app declares a list of events it can fire. Two are common to most apps:
+
+| Event | Purpose | Customer reply expected? |
+|---|---|---|
+| **App Notification** (`notify`) | One-way message — "your order is packed", "session expired", etc. | No |
+| **App Prompt** (`prompt`) | A question the app needs a real answer for | Yes — the reply goes back to the app |
+
+Apps may declare additional, more specific events on top of these — for example, a delivery app might add `pickup_ready` and `out_for_delivery`. Each event listed in the table can be bound independently.
+
+Selecting a row on the left opens its edit panel on the right.
+
+## Choosing a handler
+
+In the **When this event fires** dropdown:
+
+<Steps>
+  <Step title="Send fallback template (default)">
+    StoreTalk sends a plain WhatsApp text message using the **Fallback template** text you can edit on the same panel. Best for simple notifications where you just want to control the wording.
+  </Step>
+  <Step title="Start a flow">
+    StoreTalk launches one of your published chatbot flows. Use this when the event needs a multi-step interaction — for example, "your order is ready, would you like delivery or pickup?" The event variables are available inside the flow as <code>{"{{app_event.<name>}}"}</code> placeholders.
+  </Step>
+  <Step title="WABA template (coming soon)">
+    Send a Meta-approved WhatsApp template, mapping event variables to template parameters. Useful for marketing-window messages that need a pre-approved structure. Currently disabled in the dropdown.
+  </Step>
+  <Step title="AI agent (coming soon)">
+    Hand the conversation to one of your AI staff. Currently disabled in the dropdown.
+  </Step>
+  <Step title="Drop silently">
+    StoreTalk records the event in the audit log but does not send a WhatsApp message. Useful for events you don't care about, or for temporarily muting an app while you reconfigure it.
+  </Step>
+</Steps>
+
+After picking a handler — and a flow, if you chose "Start a flow" — click **Save handler**. The change takes effect immediately for all subsequent fires of that event. Customers who are already mid-session at the moment you save are not retroactively switched.
+
+<Note>
+  When you bind an event to a flow, that flow is automatically marked as "triggered by event X" on the Flows page. This makes it easy to see at a glance which flows belong to which apps, and prevents accidental deletion.
+</Note>
+
+## Editing the fallback template
+
+Some events ship with an editable inline template. The textarea on the right panel shows the current text — edit and click **Save template** to persist changes.
+
+You can interpolate values using `{{...}}` placeholders:
+
+| Placeholder family | Examples | Source |
+|---|---|---|
+| Event variables | `{{app_event.message}}`, `{{app_event.notification_type}}`, `{{app_event.locale}}` | The data the app passed when firing the event |
+| Store details | `{{store.name}}`, `{{store.phone}}` | Your StoreTalk profile |
+| Contact details | `{{contact.name}}`, `{{contact.phone}}` | The customer the event is being sent to |
+
+The right panel lists every event variable available for the event you're editing — with the type next to it (`STRING`, `NUMBER`, etc.) — so you don't have to guess the names.
+
+<Tip>
+  Keep your fallback templates short. They're the safety net used when nothing fancier is configured — long marketing copy belongs in flows or WABA templates instead.
+</Tip>
+
+## Testing without spamming customers
+
+The **Fire test event** button at the bottom runs the same routing pipeline that a real event would, with sample variable values. The result panel below shows:
+
+- **Handler:** which path was actually taken (Flow, Fallback, Disabled, etc.)
+- **Accepted:** whether the pipeline succeeded end to end
+- **Error message:** if something went wrong, why
+
+Test events are recorded in the app's Activity log, tagged as test, and **do not send a real WhatsApp message**. They're safe to fire as often as you like while you're tuning bindings.
+
+## How StoreTalk decides at runtime
+
+When an app fires an event, StoreTalk picks the handler in this order:
+
+```
+1. Is there an explicit, enabled binding for this event?
+   → use that handler
+2. Otherwise, does the event have a built-in fallback template?
+   → use the Fallback handler (with the template text you edited)
+3. Otherwise:
+   → drop silently (still logged in Activity)
+```
+
+This means you only need to change a binding when you want behaviour different from the default. Apps that ship sensible defaults will work correctly the moment you install them — bindings are an override, not a requirement.
+
+## Common configurations
+
+<CardGroup cols={2}>
+  <Card title="Plain notifications" icon="message-lines" color="#1a7f5a">
+    Leave on **Send fallback template** and edit the wording in your brand voice. Best for confirmations, ready-for-pickup alerts, and one-way updates.
+  </Card>
+  <Card title="Follow-up questions" icon="diagram-project" color="#1a7f5a">
+    Switch to **Start a flow** and pick a flow that asks the next question. Use this when the customer's answer needs to be captured back into your business process.
+  </Card>
+  <Card title="Quiet apps" icon="bell-slash" color="#1a7f5a">
+    Set events you don't care about to **Drop silently** instead of uninstalling the whole app. Audit logs still track them so you can re-enable later.
+  </Card>
+  <Card title="Try before you trust" icon="play" color="#1a7f5a">
+    After every change, hit **Fire test event** to confirm the pipeline picks the handler you expected before letting real customers exercise it.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The Save handler button is greyed out">
+    Save is only enabled when you've changed the handler type or the selected flow. If you haven't edited anything, there's nothing to save — that's expected.
+  </Accordion>
+  <Accordion title="The flow I want isn't in the dropdown">
+    Only **published** flows can be bound. Open the flow in the Flow Builder and click Publish, then come back. Draft flows appear in the list but are disabled.
+  </Accordion>
+  <Accordion title="Test events succeed but real customers don't see anything">
+    Check the app's **Activity** tab. If the event is being received but Status shows `Failed`, expand the row to see the WhatsApp API error — it's usually a template approval or template-window issue. If no event rows appear at all, the app isn't firing the event in the first place — that's a developer-side problem.
+  </Accordion>
+  <Accordion title="My fallback template renders {{app_event.message}} literally">
+    The placeholder name must match a variable the event actually carries. The right panel lists every variable available for the event — copy the exact name from there. Misspellings render as literal text.
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Manage installed apps" icon="gear" href="/apps/manage-apps">
+    Tour of every tab on the app management page, including the Settings tab.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Add an event-triggered flow that picks up where the app left off.
+  </Card>
+</CardGroup>

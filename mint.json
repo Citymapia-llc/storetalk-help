@@ -117,6 +117,7 @@
       "pages": [
         "apps/apps-intro",
         "apps/manage-apps",
+        "apps/event-bindings",
         {
           "group": "E-Commerce",
           "pages": [
