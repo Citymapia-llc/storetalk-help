@@ -157,6 +157,80 @@ await app.completeFulfillment(session, 'delivered', {
 
 Each push triggers a WhatsApp message to the customer using the template the store owner has configured for that status.
 
+## URL shortener
+
+When your app sends a customer-facing URL via WhatsApp — a booking link, a meeting join link, an order tracking page — the URL usually carries a JWT or signed access token in the query string and balloons to ~300 characters. WhatsApp doesn't auto-shorten, so the customer's message renders as a wall of URL with the actual content (provider name, time, location) buried below.
+
+The platform shortener (`s.storetalk.app`) collapses these to ~28 characters. Apps call it via the SDK; the response is a redirect URL ready to embed in a message.
+
+```typescript
+// Shorten a URL with an explicit expiry
+const result = await app.shortenUrl('https://shop.storetalk.app/orders/abc?token=eyJhbG...', {
+  expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  refId: `order:${orderId}`,                 // for bulk revoke later
+  tenantId: install.tenantId,
+});
+// → { code: "Xy7q2kF", shortUrl: "https://s.storetalk.app/Xy7q2kF", expiresAt: "..." }
+
+// Or, if your URL carries a JWT, let the SDK extract the `exp` claim:
+const result = await app.shortenJwtUrl(longUrl, jwt, {
+  refId: `order:${orderId}`,
+  tenantId: install.tenantId,
+});
+```
+
+### `expiresAt` is required
+
+There is no default. Caller must scope `expiresAt` to the underlying token or entity validity:
+
+- **Booking flows:** `endTime + 24h grace`
+- **Order tracking:** delivery deadline + a few days
+- **Cart recovery:** the cart's TTL
+- **JWT-bearing URLs:** prefer `shortenJwtUrl()` — extracts the `exp` claim automatically (no signature verification; that happens at the destination)
+
+A blanket 30-day default would invite stale short links pointing to long-expired tokens. Treat short URLs as exactly as sensitive as the long URLs they wrap — anyone who holds the short URL can resolve it.
+
+### Revoking on cancellation
+
+Tag every URL minted for a logical entity with the same `refId`, then revoke them all in one call when the entity reaches a terminal state (booking cancelled, order refunded, cart abandoned past TTL):
+
+```typescript
+// Revoke every short URL this app minted with refId "order:123"
+await app.revokeShortUrlsByRef(`order:${orderId}`);
+
+// Or revoke a single code if you tracked it explicitly
+await app.revokeShortUrl(code);
+```
+
+After revoke, customer taps on the short URL render the branded "this link has been cancelled" landing page (English + Hindi) for 30 days, then fall through to "no longer active". Idempotent — a second revoke returns `revoked: 0`.
+
+### Best-effort fallback
+
+If `s.storetalk.app` is unreachable, your app should log and fall back to the long URL rather than block the WhatsApp message. The customer still gets a working link, just unbranded:
+
+```typescript
+async function shortenOrFallback(url: string, opts: ShortenUrlOptions): Promise<string> {
+  try {
+    const result = await app.shortenUrl(url, opts);
+    return result.shortUrl;
+  } catch (err) {
+    console.warn('[shortener] failed, using long URL', err);
+    return url;
+  }
+}
+```
+
+### Where to wire it in
+
+Audit every code path where your app builds a customer-facing URL that goes into a WhatsApp message — typically:
+
+- **Confirmation messages** (`app.complete()` after a booking/order is finalised)
+- **Reminders / scheduled notifications** (`app.scheduleNotify()` — shorten *before* the message body is rendered, since the rendered text is stored in the scheduler payload)
+- **Lifecycle pushes** (`app.pushFulfillment()`, `app.completeFulfillment()`)
+- **Direct notifications** (`app.notify()`)
+
+Centralise in a single helper file (e.g. `src/lib/shortener.ts`) so all paths agree on the `refId` convention and `expiresAt` policy. The booking-pro app's `lib/booking-shortener.ts` is the canonical example.
+
 ## Service contracts
 
 Some capabilities are too universal to bake into every app — taking a payment, hosting a video meeting, listing on a marketplace. StoreTalk exposes them as **service contracts**. Your app declares either that it provides one (you're a payment gateway, a video host, etc.) or that it consumes one (you need payments, you need meetings) — and Core wires the two sides together at runtime.
