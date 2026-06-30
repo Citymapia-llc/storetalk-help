@@ -78,7 +78,8 @@
     {
       "group": "Inbox",
       "pages": [
-        "inbox/human-handoff"
+        "inbox/human-handoff",
+        "inbox/voice-replies"
       ]
     },
     {
