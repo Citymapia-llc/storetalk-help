@@ -142,7 +142,8 @@
     {
       "group": "Payments",
       "pages": [
-        "payments/collect-payments"
+        "payments/collect-payments",
+        "payments/stripe"
       ]
     },
     {
