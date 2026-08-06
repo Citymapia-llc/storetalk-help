@@ -1,0 +1,154 @@
+---
+title: "Accept payments with Stripe"
+description: "Collect card, Apple Pay, Google Pay, Klarna and local payments in USD, GBP, EUR or INR using your own Stripe account."
+---
+
+The **Stripe Payment Gateway** app lets your customers pay you directly inside a WhatsApp chatbot flow, using your own Stripe account. When a customer reaches a payment step they get a **Pay** button that opens a secure Stripe checkout page — cards, Apple Pay, Google Pay, Klarna, iDEAL, SEPA and more — and the flow continues automatically once they pay.
+
+<Info>
+  **Which payment app should I use?** Stripe is for businesses with a Stripe account in the **UK, EU, USA** and 40+ other countries, charging in **USD, GBP, EUR or INR**. If your business is based in **India**, use the [Razorpay](/payments/collect-payments) app instead — Stripe does not onboard new India-based businesses.
+</Info>
+
+## How it works
+
+```
+Customer reaches a Collect Payment step
+        ↓
+StoreTalk creates a Stripe checkout session
+        ↓
+Customer gets a WhatsApp message with a Pay button
+        ↓
+Customer taps → pays on Stripe (card, Apple Pay, Klarna, …)
+        ↓
+Stripe notifies StoreTalk
+        ↓
+Flow resumes → success or failure path
+```
+
+---
+
+## What you need
+
+- A **Stripe account** ([sign up free](https://dashboard.stripe.com/register)) in a supported country.
+- Your Stripe **API keys** and a **webhook signing secret** (all created in the Stripe Dashboard — steps below).
+
+---
+
+## Step 1 — Install the app
+
+<Steps>
+  <Step title="Open the App Store">
+    In StoreTalk, go to **Apps** in the left sidebar and open the **App Store**.
+  </Step>
+  <Step title="Install Stripe Payment Gateway">
+    Find **Stripe Payment Gateway** under Payments and click **Install**.
+  </Step>
+  <Step title="Open the app dashboard">
+    After installing, click **Open** (or **Configure**) to open the Stripe app's settings.
+  </Step>
+</Steps>
+
+## Step 2 — Connect your Stripe account
+
+<Steps>
+  <Step title="Copy your API keys from Stripe">
+    In your [Stripe Dashboard → API keys](https://dashboard.stripe.com/apikeys), copy your **Secret key** and **Publishable key**.
+
+    <Tip>
+      For extra safety, create a **restricted key** (API keys → Create restricted key) with write access to **Checkout Sessions**, **Payment Intents**, and read access to **Account**. The app only needs those.
+    </Tip>
+  </Step>
+  <Step title="Paste them into the app">
+    In the Stripe app dashboard, paste the **Secret key** and **Publishable key**, and choose your **Default currency** (USD, GBP, EUR or INR).
+  </Step>
+  <Step title="Set up the webhook in Stripe">
+    Copy the **Webhook URL** shown in the app dashboard. In your [Stripe Dashboard → Webhooks](https://dashboard.stripe.com/webhooks), click **Add endpoint**, paste the URL, and select these events:
+
+    - `checkout.session.completed`
+    - `checkout.session.expired`
+    - `checkout.session.async_payment_succeeded`
+    - `checkout.session.async_payment_failed`
+    - `payment_intent.payment_failed`
+    - `charge.refunded`
+
+    Stripe then shows a **Signing secret** (starts with `whsec_`). Copy it, paste it into the app dashboard, and click **Save**.
+  </Step>
+  <Step title="Test the connection">
+    Click **Test connection**. A green result confirms your keys are valid and shows your account's country and mode.
+  </Step>
+</Steps>
+
+<Warning>
+  If your keys start with `sk_test_` / `pk_test_`, you are in Stripe **test mode** — great for trying out a flow, but real customers cannot pay. Switch to your **live** keys before going live.
+</Warning>
+
+---
+
+## Step 3 — Collect a payment in a flow
+
+<Steps>
+  <Step title="Open the Flow Builder">
+    Go to **Flows** and open the flow you want to edit.
+  </Step>
+  <Step title="Add a Collect Payment (Stripe) node">
+    Drag the **Collect Payment** action from the Stripe app onto the canvas.
+  </Step>
+  <Step title="Configure the payment">
+    | Field | Required | Description |
+    |-------|----------|-------------|
+    | **Amount** | Yes | The amount to charge. Supports placeholders (e.g. an order total from an earlier step). |
+    | **Currency** | No | USD, GBP, EUR or INR. Defaults to the currency set in the app dashboard. |
+    | **Description** | No | Shown on the Stripe checkout page. |
+    | **Expiry (minutes)** | No | How long the payment link stays valid (30–1440, default 60). |
+  </Step>
+  <Step title="Connect the outcomes">
+    The node continues down a **success** path when payment is captured, and a **failure** path if it fails or the link expires. Connect each to the next step.
+  </Step>
+</Steps>
+
+---
+
+## Payment methods your customers see
+
+Stripe automatically shows the right methods for the customer's country and your account — you turn methods on or off in your own Stripe Dashboard.
+
+| Your account | Instant methods | Bank debit (confirms in 1–5 days) |
+|--------------|-----------------|-----------------------------------|
+| **UK** | Cards, Apple Pay, Google Pay, Link, Klarna | Bacs Direct Debit |
+| **EU** | Cards, Apple Pay, Google Pay, iDEAL, Bancontact, Klarna, Link | SEPA Direct Debit |
+| **USA** | Cards, Apple Pay, Google Pay, Link, Cash App Pay, Klarna | ACH Direct Debit |
+
+<Note>
+  For bank-debit methods (SEPA, Bacs, ACH) the customer finishes checkout immediately, but the money takes a few business days to confirm. StoreTalk marks the order **processing** and completes it automatically once Stripe confirms the funds.
+</Note>
+
+<Info>
+  Card payments in the UK and EU are protected by **3D Secure (Strong Customer Authentication)**. Stripe handles this on the checkout page — nothing to configure.
+</Info>
+
+---
+
+## Refunds
+
+Issue refunds from your **Stripe Dashboard** as usual. StoreTalk records the refund against the order automatically.
+
+---
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| Customer never gets the Pay button | Open the Stripe app dashboard and click **Test connection** to confirm your keys are valid. |
+| Customer pays but the flow doesn't continue | Check the webhook: the endpoint URL and signing secret must match, and all six events must be selected in your Stripe Dashboard. |
+| "Payment not configured" | Finish Step 2 — the secret key and webhook signing secret must both be saved. |
+| Amount rejected as too small | Stripe has minimum charges (about $0.50 / £0.30 / €0.50 / ₹0.50). Make sure the amount is above the minimum. |
+| India-based Stripe account won't connect | Stripe doesn't onboard new India-based businesses — use the [Razorpay](/payments/collect-payments) app instead. |
+
+<CardGroup cols={2}>
+  <Card title="Collect payments with Razorpay" icon="indian-rupee-sign" href="/payments/collect-payments">
+    The India-first payment app — UPI, cards, netbanking and wallets.
+  </Card>
+  <Card title="Build a chatbot flow" icon="diagram-project" href="/getting-started/quick-start">
+    Learn how to create your first WhatsApp chatbot flow.
+  </Card>
+</CardGroup>
