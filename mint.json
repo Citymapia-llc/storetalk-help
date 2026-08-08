@@ -136,6 +136,14 @@
             "apps/booking-pro-messages"
           ]
         },
+        {
+          "group": "Restaurant",
+          "pages": [
+            "apps/restaurant",
+            "apps/restaurant-menu",
+            "apps/restaurant-tables-kitchen"
+          ]
+        },
         "apps/building-apps"
       ]
     },

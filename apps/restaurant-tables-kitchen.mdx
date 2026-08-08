@@ -1,0 +1,48 @@
+---
+title: "Tables & Kitchen Display"
+description: "Print table QR codes, watch the floor, and run the kitchen board"
+---
+
+## Tables and QR codes
+
+In the **Floor** tab of the dashboard you manage your tables. Add a table with a label
+(e.g. `T4`), an optional zone (*Garden*, *Bar*), and a seat count. Each table gets its own
+**QR code** — open it and print it (there's a Print button that lays the QR out for a
+table tent or sticker).
+
+When a guest scans the code, the menu opens **already bound to that table** — no login,
+no typing a table number. Anything they order is added to that table's **running tab**,
+so several rounds through the evening settle as one bill.
+
+The floor board shows every table at a glance: which are occupied, the current tab total,
+and the live order queue. A table **frees automatically** once its last order is served.
+
+## The Kitchen Display
+
+The **Kitchen** tab is a live board of tickets. When an order is placed (and paid, if you
+take payment up front), it fires to the kitchen as one ticket per **station** — grill, bar,
+cold — each showing the items, chosen modifiers, and any notes ("no chilli").
+
+Each ticket has a **timer** that ages from green to amber to red so nothing is forgotten,
+and a bump button:
+
+- **Start** — the ticket moves to *preparing*
+- **Ready** — the item is plated / poured
+- **Served** — the ticket clears; when every ticket for an order is served, the order is
+  marked complete and (for dine-in) the table frees
+
+**Recall** brings a ticket back if it was bumped too early. The board updates live across
+every screen in the kitchen.
+
+## Payment timing
+
+In **Settings → Payments** you choose when payment is taken:
+
+- **Pay before fire** — the kitchen starts only after the customer pays. Best for takeaway
+  and card-first venues.
+- **Pay on collection / at counter** — the kitchen fires immediately and the bill is
+  settled later. Common for table service.
+
+Payment itself is handled by your installed payment app (Stripe or Razorpay) — StoreTalk
+never holds the money, and the customer pays in your currency. See
+[Collecting payments](/payments/collect-payments) for setup.
