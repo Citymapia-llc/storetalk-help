@@ -1,0 +1,60 @@
+---
+title: "Building your menu"
+description: "Categories, items, modifiers and allergens in the Restaurant app"
+---
+
+Your menu is built in the **Menu Builder** in the restaurant dashboard. It has three
+building blocks: categories, items, and modifier groups.
+
+## Categories
+
+Categories are the sections of your menu — *Coffee & Hot*, *Brunch*, *Wraps & Salads*,
+*Cold Drinks*. Add a category, then add items to it. Categories appear as tabs on the
+customer's menu in the order you set.
+
+## Items
+
+Each item has a name, a price, an optional photo and description, a kitchen **station**
+(so the order routes to the right screen), and allergen / dietary information.
+
+- **Price** is entered in your currency's main unit (e.g. `3.20` for £3.20). Internally
+  everything is stored in the smallest unit (pence, cents, paise) so totals never drift.
+- **Station** (e.g. `bar`, `grill`, `cold`) decides which Kitchen Display ticket the item
+  joins. Leave it blank for a single-station kitchen.
+- **Allergens** — tick any of the 14 FSA allergens; they're shown to the customer inline.
+- **Vegetarian / vegan** markers show a green dot on the menu.
+- **86 an item** — toggle *Available* off to hide a sold-out item instantly; toggle it
+  back on when it returns.
+
+## Modifier groups
+
+Modifier groups are how a customer customises an item — *Size*, *Milk*, *Add extras*.
+A group is **reusable**: build "Milk options" once and attach it to every coffee.
+
+Each group has:
+
+- **Required or optional** — a required group must be chosen before the item can be added
+  to the basket (e.g. *Size*). Optional groups can be skipped (e.g. *Add extras*).
+- **How many** — the minimum and maximum a customer may choose. Set max to 1 for a
+  single choice (radio buttons); higher for multi-select (checkboxes).
+- **Options** — each option has a name and a **price change** (which can be zero, or even
+  negative). "Large +£0.80", "Oat milk +£0.50", "Extra shot +£0.60".
+
+When a customer picks options, the item's price updates live and the exact choices are
+saved with the order — so a later menu edit never changes a placed order.
+
+## Tax, service charge and tips
+
+In **Settings** you choose how money is handled:
+
+- **Tax mode** — *VAT* (UK/EU), *GST* (India), *Sales tax*, or *None*.
+- **Inclusive or exclusive** — UK menus are usually VAT-inclusive (the price already
+  includes tax); exclusive adds it at checkout.
+- **Per-order-type rates** — e.g. eat-in vs cold-takeaway can carry different VAT.
+- **Service charge** — an optional percentage (commonly 12.5%) applied to dine-in orders.
+  It is discretionary, so the customer can remove it, and it sits outside the tax base.
+- **Tips** — offer preset tip percentages at checkout.
+
+<Card title="Tables & Kitchen Display" icon="qrcode" href="/apps/restaurant-tables-kitchen">
+  Next: print table QR codes and run the kitchen board.
+</Card>

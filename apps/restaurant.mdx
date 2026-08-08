@@ -1,0 +1,82 @@
+---
+title: "Restaurant Ordering App"
+description: "Menu ordering for restaurants & cafés — dine-in table QR, WhatsApp takeaway & delivery, item modifiers & allergens, kitchen display, and pay by card or Apple Pay"
+---
+
+The **StoreTalk Restaurant Ordering App** turns one menu into three ways to order — a
+guest scans a QR code at their table, a remote customer orders over WhatsApp, or your
+staff ring in a walk-in at the counter. Every order flows into a single kitchen board
+and one checkout.
+
+It is built for restaurants and cafés from the ground up: item modifiers (size, milk,
+add-ons), allergen labelling, dine-in tables, and a live kitchen display — none of which
+the general E-Commerce app provides. It works **multi-currency** (GBP, EUR, USD, INR),
+so a café in London and a diner in Kochi run the same app in their own currency and with
+their own payment provider.
+
+## What it does
+
+Guests order from their phone with no app to install. At a table they scan the printed
+QR code and the menu opens already bound to that table. Remotely, they tap a WhatsApp
+button and browse the same menu for collection or delivery. Orders are priced with tax
+and an optional service charge, paid by card / Apple Pay through your payment app, and
+sent straight to the kitchen display — where staff bump each ticket from *preparing* to
+*ready* to *served*.
+
+## Features
+
+- Menu with categories, item photos, and **required or optional modifier groups** (size, milk, extras) with per-option prices
+- **Allergen and dietary labelling** (the 14 FSA allergens, vegetarian / vegan markers)
+- **Dine-in table QR codes** — scan to order, with running tabs across multiple rounds
+- **WhatsApp ordering** for takeaway and delivery
+- **Counter / walk-in** orders from the dashboard
+- **Kitchen Display** — tickets routed by station (grill, bar, cold) with live timers and bump / recall
+- **Floor board** — see which tables are occupied, their running tab, and the live order queue
+- Tax handling (**VAT or GST**, inclusive or exclusive) with an optional **service charge** and tips
+- **Multi-currency** — GBP, EUR, USD, INR; prices always shown in your currency
+- Pay by card, Apple Pay, Google Pay and more via your installed **Stripe** or **Razorpay** app
+
+## How a typical dine-in order looks
+
+```
+Guest scans the QR code on Table 4
+        ↓
+Menu opens, already bound to the table
+        ↓
+Guest adds items → chooses modifiers → reviews VAT + service charge
+        ↓
+Pays by card / Apple Pay
+        ↓
+Order fires to the Kitchen Display as station tickets
+        ↓
+Kitchen bumps: preparing → ready → served
+        ↓
+Table frees automatically once the order is complete
+```
+
+## How a typical WhatsApp order looks
+
+```
+Customer taps "View Menu" on WhatsApp
+        ↓
+Browses the menu → orders for collection or delivery
+        ↓
+Pays via the WhatsApp payment link
+        ↓
+Kitchen prepares → "Ready for collection" message sent
+```
+
+## Before you start
+
+You'll need a **payment app installed** on your account — Stripe for GBP / EUR / USD, or
+Razorpay for INR — to take payment at checkout (see [Collecting payments](/payments/collect-payments)).
+If you'd rather take payment at the counter, set the payment timing to *pay on collection*
+in Settings and the kitchen will fire as soon as the order is placed.
+
+<Card title="Set up your menu" icon="utensils" href="/apps/restaurant-menu">
+  Build categories, items, modifiers and allergens.
+</Card>
+
+<Card title="Tables & Kitchen Display" icon="qrcode" href="/apps/restaurant-tables-kitchen">
+  Print table QR codes and run the kitchen board.
+</Card>
