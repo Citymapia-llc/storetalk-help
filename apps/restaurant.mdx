@@ -27,11 +27,13 @@ sent straight to the kitchen display — where staff bump each ticket from *prep
 
 - Menu with categories, item photos, and **required or optional modifier groups** (size, milk, extras) with per-option prices
 - **Allergen and dietary labelling** (the 14 FSA allergens, vegetarian / vegan markers)
-- **Dine-in table QR codes** — scan to order, with running tabs across multiple rounds
-- **WhatsApp ordering** for takeaway and delivery
-- **Counter / walk-in** orders from the dashboard
+- **Dine-in table QR codes** — scan to order; guests **pay now or run a tab** and settle at the end
+- **WhatsApp ordering** for takeaway and delivery, with a live tracking link and status messages
+- **Counter / walk-in** orders from the dashboard, and a **customer self-order kiosk**
 - **Kitchen Display** — tickets routed by station (grill, bar, cold) with live timers and bump / recall
-- **Floor board** — see which tables are occupied, their running tab, and the live order queue
+- **Floor board** — occupied tables, running tabs, **Close tab** / **Clear table**, and the live order queue
+- **Station screens** — lock a touch screen to the kitchen, floor, counter, or customer self-order
+- **Automatic tidy-up** — idle tabs auto-close and abandoned orders clear on their own
 - Tax handling (**VAT or GST**, inclusive or exclusive) with an optional **service charge** and tips
 - **Multi-currency** — GBP, EUR, USD, INR; prices always shown in your currency
 - Pay by card, Apple Pay, Google Pay and more via your installed **Stripe** or **Razorpay** app
@@ -73,10 +75,23 @@ Razorpay for INR — to take payment at checkout (see [Collecting payments](/pay
 If you'd rather take payment at the counter, set the payment timing to *pay on collection*
 in Settings and the kitchen will fire as soon as the order is placed.
 
-<Card title="Set up your menu" icon="utensils" href="/apps/restaurant-menu">
-  Build categories, items, modifiers and allergens.
-</Card>
-
-<Card title="Tables & Kitchen Display" icon="qrcode" href="/apps/restaurant-tables-kitchen">
-  Print table QR codes and run the kitchen board.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Set up your menu" icon="utensils" href="/apps/restaurant-menu">
+    Build categories, items, modifiers and allergens.
+  </Card>
+  <Card title="Tables & Kitchen Display" icon="qrcode" href="/apps/restaurant-tables-kitchen">
+    Print table QR codes and run the kitchen board.
+  </Card>
+  <Card title="Dine-in, tabs & payments" icon="receipt" href="/apps/restaurant-dine-in-tabs">
+    Pay now or run a tab, table hand-over safety, and auto-cleanup timings.
+  </Card>
+  <Card title="WhatsApp ordering" icon="whatsapp" href="/apps/restaurant-whatsapp">
+    How remote customers order and get live updates.
+  </Card>
+  <Card title="Kiosk & station screens" icon="tablet-screen-button" href="/apps/restaurant-kiosks">
+    Lock a touch screen to the kitchen, floor, counter or self-order.
+  </Card>
+  <Card title="Collecting payments" icon="credit-card" href="/payments/collect-payments">
+    Install Stripe or Razorpay to take card payments.
+  </Card>
+</CardGroup>

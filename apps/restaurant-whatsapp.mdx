@@ -1,0 +1,52 @@
+---
+title: "WhatsApp ordering (remote)"
+description: "How remote customers order for takeaway or delivery over WhatsApp, pay by card, and get live order updates"
+---
+
+Remote customers order the **same menu** as your dine-in guests — over WhatsApp, for
+collection or delivery. There's no app to install and no link to type: they tap a button and
+browse.
+
+## How an order starts
+
+A customer reaches the menu in one of two ways, both ending in a **"View Menu"** button in
+the chat:
+
+- **A keyword** — you set up a flow triggered by words like `menu`, `food` or `order`. When a
+  customer sends one, the flow opens the menu.
+- **The AI front desk** — if your AI assistant is on, a message like *"I'd like to order food"*
+  is recognised and routed to the same ordering flow.
+
+<Note>
+Ordering is always launched by a **flow** with the Restaurant app's *open menu* action. The AI
+assistant can hand off to that flow, but the menu itself is opened by the flow — so keyword and
+AI both lead to the same, consistent experience.
+</Note>
+
+## The order
+
+```
+Customer taps "View Menu" in WhatsApp
+        ↓
+Browses the menu → adds items → chooses collection or delivery
+        ↓
+Reviews the total (VAT / service charge) → pays by card / Apple Pay
+        ↓
+Order confirmed → fires to the Kitchen Display
+```
+
+## Updates the customer receives
+
+Because the order came from WhatsApp, StoreTalk keeps the customer posted **in the chat**:
+
+- **Order confirmed** — a message with the total and a short **tracking link**
+  (`s.storetalk.app/…`) they can reopen any time.
+- **Ready for collection** / **On its way** — sent when the kitchen marks the order ready (for
+  collection) or out for delivery.
+
+The **tracking link** opens a live progress tracker — *Placed → Preparing → Ready → Collected* —
+where the customer can also **cancel** the order, up until the kitchen starts preparing it.
+
+<Card title="Card payments" icon="credit-card" href="/payments/collect-payments">
+  WhatsApp orders are paid up front by card through your Stripe or Razorpay app. Set that up first.
+</Card>

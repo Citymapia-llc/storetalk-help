@@ -141,7 +141,10 @@
           "pages": [
             "apps/restaurant",
             "apps/restaurant-menu",
-            "apps/restaurant-tables-kitchen"
+            "apps/restaurant-tables-kitchen",
+            "apps/restaurant-dine-in-tabs",
+            "apps/restaurant-whatsapp",
+            "apps/restaurant-kiosks"
           ]
         },
         "apps/building-apps"
