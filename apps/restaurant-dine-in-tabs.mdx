@@ -1,0 +1,89 @@
+---
+title: "Dine-in, tabs & payments"
+description: "Pay now or run a tab at the table, how a tab stays tied to the right guest, and when unpaid orders and idle tabs are cleared automatically"
+---
+
+When a guest scans the QR code at their table, the menu opens already bound to that table.
+At their **first order** they choose how they'd like to settle — pay there and then, or open
+a tab and pay at the end.
+
+## Pay now, or start a tab
+
+<CardGroup cols={2}>
+  <Card title="Pay now" icon="credit-card">
+    Pay for that order by card straight away. Order again later and you simply pay again —
+    ideal for a quick coffee or a single round.
+  </Card>
+  <Card title="Start a tab" icon="receipt">
+    Save a card once (**no charge, no hold**), order as many rounds as you like through the
+    visit, and pay the whole tab at the end.
+  </Card>
+</CardGroup>
+
+```
+Scan table QR → browse menu → add items → Review
+                                            ├─ "Pay now · £x"     → pay this order by card
+                                            └─ "Start a tab"      → save card → order more → pay at the end
+```
+
+## Running a tab
+
+1. **Open the tab** — the guest taps *Start a tab* and saves their card. Nothing is charged
+   and there's no hold on the card; it's simply kept on file for the end of the meal.
+2. **Order rounds** — each round is sent to the kitchen right away and added to the tab. No
+   payment happens per round.
+3. **Settle** — the guest taps **View tab** to see every round and item, then **Pay tab** to
+   charge the saved card. Staff can also settle it from the Floor board (see below).
+
+<Note>
+Each round is its own kitchen ticket (and its own order number) so the kitchen can cook it
+as it comes in — but they all roll up to **one tab** and settle in a **single payment**.
+</Note>
+
+## Keeping a tab tied to the right guest
+
+A table's QR code is permanent, so StoreTalk makes sure a new guest can't accidentally land
+on the **previous** guest's tab and order onto their card.
+
+The phone that opens a tab holds a private key for it. Only that phone can keep adding to the
+tab. If **someone else** scans the same table while a tab is still open, they see a notice —
+*"This table has an open tab, please ask a staff member"* — and **cannot** order onto it.
+
+<Warning>
+The safe way to turn a table over is for staff to **Close tab** (or **Clear table**) when a
+party leaves. That settles the previous guest and frees the table for the next one.
+</Warning>
+
+## Closing and clearing tables (staff)
+
+On the **Floor** board each occupied table has an action:
+
+- **Close tab** — for a table running a card-on-file tab. Charges the saved card for the whole
+  tab, marks the rounds paid, and frees the table.
+- **Clear table** — for a table with only *pay-now* orders. Marks paid orders done, cancels any
+  abandoned ones, clears their kitchen tickets, and frees the table.
+
+A table also **frees automatically** once the kitchen serves its last order.
+
+## Automatic cleanup
+
+StoreTalk tidies up on its own so nothing is left holding a table. A background sweep runs
+about **every 10 minutes**:
+
+| What | When | What happens |
+| --- | --- | --- |
+| **Idle tab** | no new round for **3 hours** | the saved card is charged for the tab and the table is freed |
+| **Abandoned order** | a pay-first order left unpaid for **30 minutes** (card page closed or failed) | the order is voided so it stops holding the table |
+
+<Note>
+The auto-close is a **safety net**, not the everyday flow — staff closing tabs and clearing
+tables is still the normal way to turn a table over. The 3-hour window is long enough not to
+cut a leisurely meal short.
+</Note>
+
+## Card payments
+
+Payment is handled by your installed payment app — **Stripe** (GBP / EUR / USD) or **Razorpay**
+(INR). StoreTalk never holds the money. For card-on-file tabs the card is saved securely at the
+provider and charged at the end; if a card needs extra authentication (3-D Secure) the guest is
+simply asked to confirm on the payment page. See [Collecting payments](/payments/collect-payments).
