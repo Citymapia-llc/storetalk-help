@@ -11,14 +11,18 @@ Your spreadsheet needs at minimum a **Phone** column. Other columns are optional
 
 | Column | Example | Required? |
 |--------|---------|-----------|
-| Phone  | +91 98765 43210 (or 9876543210) | Yes |
+| Phone  | +91 98765 43210 | Yes |
 | Name   | Rahul Sharma | Optional |
 | Email  | rahul@example.com | Optional |
 | Tags   | VIP, Mumbai | Optional |
 
 <Tip>
-  Phone numbers can be in any format — with or without +91, with or without spaces. StoreTalk cleans them up automatically.
+  Include the country code with every number: **+91 98765 43210**, not 98765 43210. Spaces, dashes and brackets are fine, and StoreTalk removes them automatically. A number that starts with **00** instead of **+** (for example 0091 98765 43210) also works.
 </Tip>
+
+<Note>
+  Why the country code? StoreTalk works with customers in many countries, and a number without one is ambiguous. For example, **6591234567** is a valid Singapore number and could also be mistaken for an Indian one. StoreTalk doesn't guess, so the message always reaches the right person.
+</Note>
 
 ## How to import
 
@@ -35,6 +39,11 @@ Your spreadsheet needs at minimum a **Phone** column. Other columns are optional
   <Step title="Map your columns">
     Match your spreadsheet columns to the Contact fields — for example, column A → Phone.
   </Step>
+  <Step title="Choose what to do with numbers that have no country code">
+    Under **Numbers without a country code**, pick one:
+    - **Skip them (report as errors)** — the default. Those rows are not imported and are listed in the results so you can fix them.
+    - **Treat as +91 (IN)** (or another country): use this only if *every* local number in the file is from that country. Numbers that already start with + or 00 are kept as they are.
+  </Step>
   <Step title="Import">
     Click **Import**. StoreTalk imports all rows and skips duplicates automatically.
   </Step>
@@ -43,6 +52,14 @@ Your spreadsheet needs at minimum a **Phone** column. Other columns are optional
 <Warning>
   If a phone number already exists as a contact, the import will update their name and tags — it will not create a duplicate.
 </Warning>
+
+## If some rows show errors
+
+After the import, StoreTalk lists any rows it skipped and why. The most common reason is:
+
+> **Phone number must include the country code, e.g. +91 98765 43210**
+
+Add the country code to those numbers in your spreadsheet and import the file again. Rows that were already imported are updated, not duplicated. Alternatively, run the import again and choose the right country under **Numbers without a country code**.
 
 ## After import
 
