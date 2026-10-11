@@ -19,7 +19,7 @@ Every team member has a role that controls which parts of StoreTalk they can acc
 </Tip>
 
 <Warning>
-  Only the Owner can change WhatsApp settings, manage billing, or invite Admins. There can only be one Owner per account.
+  Only the Owner can change WhatsApp settings or payment keys, manage billing, invite Admins, change roles, or request account deletion. There can only be one Owner per account.
 </Warning>
 
 ## Sidebar access by role
@@ -38,3 +38,38 @@ Knowledge Base ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
 Settings       ✓ Owner  ✓ Admin  ✗ Manager  ✗ Agent
 Help           ✓ Owner  ✓ Admin  ✓ Manager  ✓ Agent
 ```
+
+<Note>
+  Agents can also open a contact from the Inbox to fix a name or tags, and move pipeline cards, including from the mobile app. They can't delete, import or export contacts.
+</Note>
+
+## Who can delete or change sensitive things
+
+StoreTalk checks these rules on the server, so hiding a button is never the only protection. If someone tries something their role doesn't allow, they see *"Your role can't do this. Ask the store owner or an admin."*
+
+| Action | Owner | Admin | Manager | Agent |
+|--------|:-----:|:-----:|:-------:|:-----:|
+| Reply, assign, resolve, archive conversations | ✓ | ✓ | ✓ | ✓ |
+| Create and edit contacts, move pipeline cards | ✓ | ✓ | ✓ | ✓ |
+| Import contacts, bulk tag or add to segment | ✓ | ✓ | ✓ | ✗ |
+| Create and edit segments and pipelines | ✓ | ✓ | ✓ | ✗ |
+| **Delete** contacts, segments, pipelines or cards | ✓ | ✓ | ✗ | ✗ |
+| Export or permanently erase a contact | ✓ | ✓ | ✗ | ✗ |
+| Templates, flows, campaigns, AI staff, knowledge base, apps, settings | ✓ | ✓ | ✗ | ✗ |
+| Invite or remove Managers and Agents | ✓ | ✓ | ✗ | ✗ |
+| WhatsApp number settings, payment gateway keys | ✓ | ✗ | ✗ | ✗ |
+| Billing, plan changes, wallet top-up | ✓ | view only | ✗ | ✗ |
+| Change a member's role, delete the account | ✓ | ✗ | ✗ | ✗ |
+
+A role change takes effect within a minute, without the person signing out.
+
+## Roles inside apps
+
+When a team member opens an app dashboard (Shop, Restaurant, BookingPro, Meet, Razorpay and others), the app receives their real role and limits what they can do:
+
+| In app dashboards | Owner | Admin | Manager | Agent |
+|-------------------|:-----:|:-----:|:-------:|:-----:|
+| View orders and bookings, day-to-day work (update order status, mark paid, kitchen screen, complete a booking) | ✓ | ✓ | ✓ | ✓ |
+| Change the catalogue, menu, services, availability and app settings | ✓ | ✓ | ✓ | ✗ |
+| Delete records, cancel with refund, issue refunds | ✓ | ✓ | ✗ | ✗ |
+| Payment gateway keys, payouts and bank details, kiosk screen links | ✓ | ✗ | ✗ | ✗ |
