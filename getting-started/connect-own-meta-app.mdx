@@ -40,7 +40,7 @@ A System User token doesn't expire, unlike the temporary token on the API Setup 
     </Frame>
   </Step>
   <Step title="Assign assets">
-    Select the System User and click **Assign assets**. Give it **full control** of:
+    Select the System User and click **Assign assets**. Do this **before** generating a token: if you skip it, the token dialog shows *"No permissions available. Assign an app role to the system user"*. Give it **full control** of:
     - your **app** (under *Apps*)
     - your **WhatsApp account** (under *WhatsApp accounts*)
 
@@ -117,7 +117,14 @@ Back in your app, go to **Customize** → **Configuration** and enter:
 | Callback URL | `https://api.storetalk.app/api/webhook/whatsapp` |
 | Verify token | `storetalk_whatsapp_2026` |
 
-Click **Verify and save**. Then, under **Webhook fields**, click **Subscribe** next to **messages**.
+Click **Verify and save**. The **Webhook fields** list then appears below. Click **Subscribe** next to these two fields:
+
+| Field | Why StoreTalk needs it |
+|-------|------------------------|
+| `messages` | **Required.** Delivers customer messages and delivery/read receipts to your inbox. |
+| `message_template_status_update` | Updates your templates to **Approved** or **Rejected** in StoreTalk automatically. |
+
+Leave the other fields unsubscribed. StoreTalk doesn't use them.
 
 <Frame>
   <img src="/images/meta-setup/05-webhook.png" alt="Configuration page with Callback URL and Verify token filled in" />
@@ -159,5 +166,6 @@ Send a WhatsApp message to your business number from another phone. It should ap
 | Incoming messages still missing after publishing | Your WhatsApp account isn't subscribed to your app | Contact StoreTalk support. We can link it for you in one click |
 | "Verify and save" fails on the webhook | Typo in the Callback URL or Verify token | Copy both values from StoreTalk **Settings → WhatsApp** |
 | "Invalid OAuth access token" or permission errors | Token missing assets or permissions | Re-check step 1: assign the app and WhatsApp account, and tick all three permissions |
+| Template status stuck on Pending in StoreTalk | `message_template_status_update` not subscribed | Subscribe to it in **Webhook fields** (step 5) |
 | Templates don't sync or campaigns fail | Wrong WABA ID, or no payment method | Use the **Messaging account ID** from API Setup (step 2) and add a payment method (step 7) |
 | "Payment method missing or ineligible" banner in Meta | No card on the Messaging account | Step 7 |
