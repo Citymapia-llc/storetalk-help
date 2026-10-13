@@ -57,7 +57,8 @@
     {
       "group": "Getting Started",
       "pages": [
-        "getting-started/quick-start"
+        "getting-started/quick-start",
+        "getting-started/connect-own-meta-app"
       ]
     },
     {

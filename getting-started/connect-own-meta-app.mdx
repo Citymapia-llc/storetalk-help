@@ -1,0 +1,163 @@
+---
+title: "Connect your own Meta app"
+description: "Step-by-step: connect a WhatsApp number you manage in your own Meta developer app to StoreTalk, with screenshots of the current Meta dashboard."
+---
+
+Use this guide if you chose **Self-managed** in **Settings → WhatsApp**. You'll copy a few values from Meta into StoreTalk, then point Meta's webhook at StoreTalk so customer messages reach your inbox.
+
+If you don't have a Meta Business Account or developer app yet, choose **StoreTalk-managed** instead and we'll set it up for you.
+
+<Info>
+  **Meta has changed how WhatsApp accounts are organised.** What used to be one *WhatsApp Business Account (WABA)* is now split into two:
+
+  - a **WhatsApp account**, which owns your phone number, display name, quality rating and messaging limits
+  - a **Messaging account**, which owns your templates, payment method and webhooks
+
+  Your **WABA ID** is now shown as the **Messaging account ID**. It's the same number, and it's what StoreTalk asks for.
+</Info>
+
+## What you'll need
+
+| Item | Where it comes from |
+|------|---------------------|
+| Phone Number ID | Your app → API Setup |
+| WABA ID (Messaging account ID) | Your app → API Setup |
+| System User access token | Meta Business Suite → System users |
+| App secret | Your app → App settings → Basic |
+
+You must be an **admin** of the business portfolio and the Meta app.
+
+## 1. Create a System User and a permanent token
+
+A System User token doesn't expire, unlike the temporary token on the API Setup page (which lasts 24 hours).
+
+<Steps>
+  <Step title="Open System users">
+    Go to [Meta Business Suite](https://business.facebook.com/latest/settings/system_users) → **Settings** → **Users** → **System users**, and click **Add**. Give it a name (for example, *StoreTalk*) and the **Admin** role.
+
+    <Frame>
+      <img src="/images/meta-setup/01-system-users.jpg" alt="Meta Business Suite Settings, System users page with the Add button" />
+    </Frame>
+  </Step>
+  <Step title="Assign assets">
+    Select the System User and click **Assign assets**. Give it **full control** of:
+    - your **app** (under *Apps*)
+    - your **WhatsApp account** (under *WhatsApp accounts*)
+
+    <Warning>
+      Skipping this step is the most common reason a token is generated but StoreTalk still can't send messages or see your number.
+    </Warning>
+  </Step>
+  <Step title="Generate the token">
+    Click **Generate token**, choose your app, set **Token expiration** to **Never**, and tick these permissions:
+    - `business_management`
+    - `whatsapp_business_management`
+    - `whatsapp_business_messaging`
+
+    Copy the token straight away. Meta only shows it once.
+  </Step>
+</Steps>
+
+## 2. Copy your Phone Number ID and WABA ID
+
+<Steps>
+  <Step title="Open API Setup">
+    Go to [Meta for Developers](https://developers.facebook.com/apps/) → your app → **Use cases** → **Connect on WhatsApp** → **Customize** → **API Setup**.
+
+    <Frame>
+      <img src="/images/meta-setup/02-api-setup.jpg" alt="Customize use case page with API Setup selected in the left menu" />
+    </Frame>
+
+    <Note>
+      Older apps may still show **WhatsApp → API Setup** directly in the left menu. The page is the same.
+    </Note>
+  </Step>
+  <Step title="Pick your number and copy the IDs">
+    Under **Send and receive messages → Step 1**, choose your business number in the **From** dropdown. Copy:
+    - **Phone number ID**
+    - **Messaging account ID** (this is your WABA ID)
+
+    <Frame>
+      <img src="/images/meta-setup/03-api-setup-ids.png" alt="From dropdown with the Phone number ID and Messaging account ID shown underneath" />
+    </Frame>
+
+    <Warning>
+      Make sure you pick your **real business number**, not Meta's free test number. Test numbers can only message a handful of pre-approved recipients.
+    </Warning>
+  </Step>
+</Steps>
+
+## 3. Copy your App secret
+
+Go to your app → **App settings** → **Basic**, click **Show** next to **App secret**, and copy it. StoreTalk uses it to verify that incoming webhooks really come from Meta.
+
+While you're here, fill in **Privacy policy URL**. Meta won't let you publish the app without it (step 6).
+
+<Frame>
+  <img src="/images/meta-setup/04-app-secret.png" alt="App settings Basic page showing App secret with a Show button and the Privacy policy URL field" />
+</Frame>
+
+## 4. Save the details in StoreTalk
+
+In StoreTalk, go to **Settings → WhatsApp**, choose **Self-managed**, and enter:
+
+- **Phone Number ID**
+- **WhatsApp Business Account ID (WABA ID)**: the Messaging account ID
+- **System User Access Token**
+- **Meta App Secret**
+
+Click **Save credentials**.
+
+## 5. Point the webhook at StoreTalk
+
+Back in your app, go to **Customize** → **Configuration** and enter:
+
+| Field | Value |
+|-------|-------|
+| Callback URL | `https://api.storetalk.app/api/webhook/whatsapp` |
+| Verify token | `storetalk_whatsapp_2026` |
+
+Click **Verify and save**. Then, under **Webhook fields**, click **Subscribe** next to **messages**.
+
+<Frame>
+  <img src="/images/meta-setup/05-webhook.png" alt="Configuration page with Callback URL and Verify token filled in" />
+</Frame>
+
+## 6. Publish your app
+
+Go to your app → **Publish** (left menu) and click **Publish**.
+
+<Warning>
+  While an app is **Unpublished**, Meta only sends *test* webhooks. Real customer messages won't reach StoreTalk, even though sending from StoreTalk works. This is the most common cause of "I can send but never receive".
+</Warning>
+
+The **Publish** button stays greyed out until a **Privacy policy URL** is set in App settings → Basic.
+
+<Frame>
+  <img src="/images/meta-setup/06-publish.png" alt="Publish page showing the Privacy policy URL requirement and the Publish button" />
+</Frame>
+
+## 7. Add a payment method
+
+Meta Business Suite → **Settings** → **Accounts** → **Messaging accounts** → select your account → **Payment Settings**.
+
+Without a payment method you can only reply to customers who message you first. You can't start conversations or send template messages, including campaigns.
+
+<Frame>
+  <img src="/images/meta-setup/07-payment-method.jpg" alt="Messaging accounts page showing No payment method found and the Payment Settings button" />
+</Frame>
+
+## Test it
+
+Send a WhatsApp message to your business number from another phone. It should appear in the StoreTalk **Inbox** within a few seconds.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|-------------|-----|
+| Sending works, but incoming messages never arrive | App is unpublished, or **messages** isn't subscribed | Publish the app (step 6) and check **Webhook fields** (step 5) |
+| Incoming messages still missing after publishing | Your WhatsApp account isn't subscribed to your app | Contact StoreTalk support. We can link it for you in one click |
+| "Verify and save" fails on the webhook | Typo in the Callback URL or Verify token | Copy both values from StoreTalk **Settings → WhatsApp** |
+| "Invalid OAuth access token" or permission errors | Token missing assets or permissions | Re-check step 1: assign the app and WhatsApp account, and tick all three permissions |
+| Templates don't sync or campaigns fail | Wrong WABA ID, or no payment method | Use the **Messaging account ID** from API Setup (step 2) and add a payment method (step 7) |
+| "Payment method missing or ineligible" banner in Meta | No card on the Messaging account | Step 7 |
