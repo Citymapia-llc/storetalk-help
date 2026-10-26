@@ -55,7 +55,8 @@ have for that number.
       &code_challenge_method=S256
     ```
     **PKCE (`S256`) is required for every client**, including websites with a server.
-    Add `prompt=login` to always ask for a fresh code.
+    Optional: `prompt=login` always asks for a fresh code; `login_hint=+919876543210` (E.164) pre-fills
+    the number if its country is allowed for your website.
   </Step>
   <Step title="Handle the callback">
     The customer returns to your `redirect_uri` with `?code=…&state=…`. Check `state` matches what you sent.
@@ -127,6 +128,7 @@ export function SignIn() {
 }
 ```
 
+Pass `loginHint="+919876543210"` to pre-fill the number, or `forceLogin` to always ask for a fresh code.
 `locale` sets the label (*Continue with WhatsApp* in English, Hindi, Malayalam or Tamil); `variant="outline"`
 gives a white button that sits well next to Google/Apple buttons. Not using React? Call
 `startWhatsAppLogin({ clientId, redirectUri })` and send the browser to the returned `url`.
@@ -238,8 +240,14 @@ Your website ends its own session as usual. To also end the *Continue as* sessio
 it to:
 
 ```
-https://auth.storetalk.app/oauth2/logout?client_id=stl_…
+https://auth.storetalk.app/oauth2/logout
+  ?client_id=stl_…
+  &post_logout_redirect_uri=https%3A%2F%2Fexample.com%2Fsigned-out
+  &state=<optional>
 ```
+
+The customer comes back to `post_logout_redirect_uri` (with your `state`) only if it's one of the
+**Sign-out return addresses** registered in Settings; otherwise they see a StoreTalk confirmation.
 
 To revoke an access token, `POST` `token`, `client_id` (and `client_secret` for websites with a server) to
 the revocation endpoint. It always returns `200`.

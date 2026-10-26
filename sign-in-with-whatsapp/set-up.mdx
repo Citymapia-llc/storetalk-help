@@ -68,6 +68,12 @@ environment settings). If it's lost, create a new one — see [Secrets](#secrets
   like `com.example.app:/oauth`.
 - No `#` part, and up to 10 per website or app.
 
+### Sign-out return addresses (optional)
+
+If your website signs customers out of StoreTalk's **Continue as …** too, add the address(es) they should
+come back to afterwards, e.g. `https://example.com/signed-out`. Same rules as redirect URIs. Without one,
+signing out still works — customers just stay on a StoreTalk confirmation.
+
 ### Allowed origins (browser apps only)
 
 If a **browser app** finishes the sign-in from the web page itself, add the site's address here, e.g.
@@ -101,7 +107,7 @@ Each website or app card shows its status, client ID, redirect URIs, countries, 
 
 | Action | What happens |
 |--------|--------------|
-| **Edit** | Change the name, redirect URIs, origins, countries and limits. |
+| **Edit** | Change the name, redirect URIs, sign-out return addresses, origins, countries and limits. |
 | **New secret** | Creates a new client secret (websites with a server). The old one keeps working for **24 hours** so you can update your website without downtime. |
 | **Turn off / Turn on** | Pauses sign-ins for this website without deleting it. |
 | **Remove** | Deletes it. Customers can no longer sign in to it, and their saved consents for it are removed. |
@@ -125,8 +131,12 @@ Each website or app card shows its status, client ID, redirect URIs, countries, 
 Every customer who signs in is added to (or matched in) **Contacts** by their WhatsApp number, so you can
 see them in the inbox, segment them and include them in campaigns.
 
+Open a contact and go to **Web activity** to see **Signed in with WhatsApp**: each website or app they
+signed in to, when they last signed in, and whether they ticked *OK to get offers* (**OK to get offers** or
+**No offers**). Anyone on your team who can view contacts can see this.
+
 <Note>
-Signing in doesn't subscribe anyone to marketing, and it never changes a contact's opt-out. The first time
-customers sign in they can tick an optional, unticked box to receive offers from you — see
-[What customers see](/sign-in-with-whatsapp/customer-experience).
+Signing in doesn't subscribe anyone to marketing, and it never changes a contact's opt-out. The *OK to get
+offers* choice is shown on the contact for you to respect — before sending marketing campaigns, follow your
+usual opt-in rules. See [What customers see](/sign-in-with-whatsapp/customer-experience).
 </Note>
