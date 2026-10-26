@@ -1,0 +1,62 @@
+---
+title: "What customers see"
+description: "The Sign in with WhatsApp steps from your customer's side: number, code, consent and “Continue as”."
+---
+
+When a customer taps **Continue with WhatsApp** on your website or app, they go to a StoreTalk sign-in
+page showing your business name. It's built for phones and takes a few seconds.
+
+## First time
+
+<Steps>
+  <Step title="Enter their WhatsApp number">
+    The country code is filled in for your country. They type the rest and tap **Send code on WhatsApp**.
+    A quick, usually invisible security check runs in the background.
+  </Step>
+  <Step title="Get the code on WhatsApp">
+    A 6-digit code arrives **from your business's WhatsApp number**. They tap **Copy code** in WhatsApp and
+    paste it on the sign-in page. The code works for **5 minutes**.
+  </Step>
+  <Step title="Enter the code">
+    The page signs them in as soon as 6 digits are entered. If they need a new code, **Resend code**
+    unlocks after 30 seconds, and **Change number** lets them fix a typo.
+  </Step>
+  <Step title="Agree to share">
+    The first time they sign in to a particular website or app, they see what it will get —
+    **their WhatsApp number** and **their name** (if you have it) — and tap **Allow** or **Cancel**.
+    There's also an optional, **unticked** box: *“Also OK to get offers and updates from [your business] on WhatsApp.”*
+  </Step>
+  <Step title="Back to your website">
+    They return to your website or app, signed in.
+  </Step>
+</Steps>
+
+## Next time
+
+On the same phone or browser, the page shows **Continue as +91 98•••• 3210**. One tap and they're back —
+no code, no consent screen. This lasts for the *Stay signed in* period you set (30 days by default),
+extended each time they use it. They can always choose **Use a different number**.
+
+If your website asks for a fresh sign-in (for example before a sensitive action), customers are asked for
+a new code even if they're already signed in.
+
+## If something goes wrong
+
+| What the customer sees | Why |
+|------------------------|-----|
+| *That code isn't right or has expired.* | Wrong code, or older than 5 minutes. They can resend. |
+| *Too many code requests. Please wait a while and try again.* | Too many codes for this number or connection — see [limits](/sign-in-with-whatsapp/security-and-limits#limits). |
+| *Too many wrong codes for this number today.* | The number is paused until the next day after repeated wrong codes. |
+| *Sign-in isn't available for numbers from this country.* | The number's country isn't in your allowed countries. |
+| *Sign-in is being set up for this business.* | Your code template isn't approved by Meta yet. |
+| *We couldn't send a code right now.* | WhatsApp refused the message (for example your WhatsApp connection needs attention). |
+| *This website isn't registered for Sign in with WhatsApp.* | The website's client ID or redirect address doesn't match what's in Settings. |
+
+If the customer taps **Cancel** on the consent screen, they return to your website without being signed in.
+
+## Privacy
+
+- Your website only gets what the customer agreed to: a sign-in ID, their WhatsApp number, and their name
+  if you have it on file.
+- The sign-in page is run by StoreTalk; your website never sees the code.
+- Customers are added to your **Contacts**. They are not subscribed to marketing unless they ticked the box.
