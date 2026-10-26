@@ -152,6 +152,16 @@
       ]
     },
     {
+      "group": "Sign in with WhatsApp",
+      "pages": [
+        "sign-in-with-whatsapp/overview",
+        "sign-in-with-whatsapp/set-up",
+        "sign-in-with-whatsapp/customer-experience",
+        "sign-in-with-whatsapp/developer-guide",
+        "sign-in-with-whatsapp/security-and-limits"
+      ]
+    },
+    {
       "group": "Payments",
       "pages": [
         "payments/collect-payments"

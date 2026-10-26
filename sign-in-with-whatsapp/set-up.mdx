@@ -1,0 +1,142 @@
+---
+title: "Set up Sign in with WhatsApp"
+description: "Register your website or app in Settings, get its client ID and secret, and manage limits and countries."
+---
+
+You manage Sign in with WhatsApp in **Settings → Sign in with WhatsApp** (under *Store*).
+
+<Note>
+Only the **Owner** and **Admins** can manage this page by default (permission: *Manage Sign in with
+WhatsApp*). Other team members don't see it.
+</Note>
+
+## Before you start
+
+- Your **own WhatsApp Business account** is connected under **Settings → WhatsApp**.
+- You're on a **paid plan** or an active **free trial**.
+
+If something is missing, the page tells you what and links to the right place.
+
+## 1. Check the code template
+
+StoreTalk sends codes using a WhatsApp **authentication template** on your own account. It's created for
+you automatically (the first time you add a website) and Meta usually approves it within minutes.
+
+| Status | Meaning |
+|--------|---------|
+| **Ready — codes are sent from your WhatsApp number** | Customers can sign in. |
+| **Waiting for Meta to approve your code template** | Customers see *“Sign-in is being set up for this business”* until Meta approves it. |
+
+## 2. Add your website or app
+
+<Steps>
+  <Step title="Click Add">
+    In **Websites and apps**, click **Add**.
+  </Step>
+  <Step title="Name it">
+    Use a name customers will recognise, e.g. *Citymapia website*. It's shown on the sign-in page
+    (*“Sign in to Citymapia website”*).
+  </Step>
+  <Step title="Choose the type">
+    - **Website with a server** — your server finishes the sign-in using a **client secret**
+      (WordPress, Next.js, Laravel, Node, PHP…). Choose this if you're unsure.
+    - **Browser or mobile app** — single-page web apps and iOS/Android apps. No secret; they use a
+      one-time security check (PKCE) instead. You can't change the type later.
+  </Step>
+  <Step title="Add redirect URIs">
+    The address(es) where customers return after signing in, one per line — your developer will give you
+    these, e.g. `https://example.com/auth/callback`. They must match **exactly**.
+  </Step>
+  <Step title="Set countries and limits (optional)">
+    See [Countries and limits](#countries-and-limits) below. The defaults are fine to start.
+  </Step>
+  <Step title="Save the details">
+    You'll see the **Client ID**, the **Client secret** (website with a server only) and the
+    **Discovery URL**. Copy them and give them to your developer.
+  </Step>
+</Steps>
+
+<Warning>
+The **client secret is shown only once**. Store it somewhere safe (like your hosting provider's
+environment settings). If it's lost, create a new one — see [Secrets](#secrets).
+</Warning>
+
+### Redirect URI rules
+
+- Must start with `https://` — or `http://localhost` while testing on a computer.
+- Mobile apps can use an app link like `https://example.com/auth/callback` (recommended) or an app scheme
+  like `com.example.app:/oauth`.
+- No `#` part, and up to 10 per website or app.
+
+### Sign-out return addresses (optional)
+
+If your website signs customers out of StoreTalk's **Continue as …** too, add the address(es) they should
+come back to afterwards, e.g. `https://example.com/signed-out`. Same rules as redirect URIs. Without one,
+signing out still works — customers just stay on a StoreTalk confirmation.
+
+### Allowed origins (browser apps only)
+
+If a **browser app** finishes the sign-in from the web page itself, add the site's address here, e.g.
+`https://example.com` (no path). Websites with a server don't need this.
+
+## Countries and limits
+
+| Setting | Default | What it does |
+|---------|---------|--------------|
+| **Countries** | Your WhatsApp number's country | Calling codes customers may sign in from, e.g. `91, 44`. Numbers from other countries are refused. |
+| **Codes per day** | 200 | The most codes this website can send in a day (1–5,000). Protects your Meta bill if someone tries to abuse your sign-in page. |
+| **Stay signed in (days)** | 30 | How long customers can use **Continue as …** without a new code (1–90). It extends each time they use it. |
+
+<Tip>
+International authentication messages cost much more than domestic ones and are the usual target of
+abuse. Only add countries your customers actually come from.
+</Tip>
+
+## Usage
+
+Once you have a website, the page shows the **last 30 days**:
+
+- **Codes sent** — codes sent to customers' WhatsApp.
+- **Sign-ins** — sign-ins with a code plus quick **Continue as …** sign-ins.
+- **Blocked** — attempts stopped by the security checks (too many requests, bot check, wrong country…).
+- **Meta charges (est.)** — an estimate of what Meta charges your WhatsApp account for the codes.
+
+## Managing a website or app
+
+Each website or app card shows its status, client ID, redirect URIs, countries, limits and last sign-in.
+
+| Action | What happens |
+|--------|--------------|
+| **Edit** | Change the name, redirect URIs, sign-out return addresses, origins, countries and limits. |
+| **New secret** | Creates a new client secret (websites with a server). The old one keeps working for **24 hours** so you can update your website without downtime. |
+| **Turn off / Turn on** | Pauses sign-ins for this website without deleting it. |
+| **Remove** | Deletes it. Customers can no longer sign in to it, and their saved consents for it are removed. |
+
+### Statuses
+
+| Status | Meaning |
+|--------|---------|
+| **Active** | Customers can sign in. |
+| **Turned off** | You paused it. |
+| **Suspended** | Your own WhatsApp account isn't connected or your plan isn't active. Fix that and it resumes on its own. |
+
+## Secrets
+
+- Treat the client secret like a password: keep it on your server only, never in website code or apps.
+- If it may have leaked, click **New secret**, update your website, and the old one stops working after 24 hours.
+- Browser and mobile apps don't have a secret.
+
+## Contacts
+
+Every customer who signs in is added to (or matched in) **Contacts** by their WhatsApp number, so you can
+see them in the inbox, segment them and include them in campaigns.
+
+Open a contact and go to **Web activity** to see **Signed in with WhatsApp**: each website or app they
+signed in to, when they last signed in, and whether they ticked *OK to get offers* (**OK to get offers** or
+**No offers**). Anyone on your team who can view contacts can see this.
+
+<Note>
+Signing in doesn't subscribe anyone to marketing, and it never changes a contact's opt-out. The *OK to get
+offers* choice is shown on the contact for you to respect — before sending marketing campaigns, follow your
+usual opt-in rules. See [What customers see](/sign-in-with-whatsapp/customer-experience).
+</Note>

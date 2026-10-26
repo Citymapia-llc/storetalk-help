@@ -1,0 +1,91 @@
+---
+title: "Sign in with WhatsApp"
+description: "Let customers sign in to your website or app with their WhatsApp number — like “Sign in with Google”, with the code coming from your own WhatsApp number."
+---
+
+**Sign in with WhatsApp** adds a **“Continue with WhatsApp”** button to your website or app, next to
+buttons like *Continue with Google* or *Continue with Apple*. Customers sign in with the WhatsApp number
+they already use — no password, no email, no SMS.
+
+Meta doesn't offer a “Login with WhatsApp” button for websites. StoreTalk fills that gap: it sends the
+customer a one-time code **from your own WhatsApp number**, checks it, and tells your website who signed in.
+
+## How it works
+
+```
+Customer taps “Continue with WhatsApp” on your website
+        ↓
+Enters their WhatsApp number on the StoreTalk sign-in page
+        ↓
+Gets a 6-digit code on WhatsApp — from YOUR business number
+        ↓
+Enters the code (first time only: agrees to share their number with you)
+        ↓
+Back on your website, signed in with a verified WhatsApp number
+```
+
+Next time, on the same phone or browser, they just tap **Continue as +91 98•••• 3210** — no new code.
+
+## What you get
+
+<CardGroup cols={2}>
+  <Card title="Easier sign-in" icon="mobile-screen">
+    Almost every customer in India already has WhatsApp. No passwords to forget, no email to confirm.
+  </Card>
+  <Card title="Verified numbers" icon="badge-check">
+    Every signed-in customer has proved they own the number — no fake or mistyped numbers.
+  </Card>
+  <Card title="Customers in your inbox" icon="address-book">
+    Each sign-in creates or updates the customer in **Contacts**, linked to their WhatsApp conversation.
+  </Card>
+  <Card title="Your brand" icon="store">
+    The code comes from your WhatsApp number and the sign-in page shows your business name.
+  </Card>
+</CardGroup>
+
+## Who can use it
+
+Sign in with WhatsApp is available to businesses that have:
+
+1. **Their own WhatsApp Business account connected to StoreTalk.** Codes are always sent from your own
+   number — never from the shared StoreTalk number. If your business uses the shared StoreTalk number (or
+   your own number on StoreTalk's shared account), connect your own WhatsApp Business account first.
+2. **An active plan** — any paid plan, or an active free trial.
+
+<Note>
+If either of these stops being true (for example, you disconnect your own WhatsApp account), your
+websites are **suspended** and customers can't sign in. They resume automatically once you're eligible
+again. Codes are never switched to the shared StoreTalk number.
+</Note>
+
+## What it costs
+
+Each code is a WhatsApp **authentication message**, which Meta charges to **your** WhatsApp Business
+account at its authentication rate. StoreTalk doesn't add a fee. Settings shows an **estimate** of these
+Meta charges for the last 30 days.
+
+Customers who tap **Continue as …** don't get a code, so those sign-ins cost nothing.
+
+## Works with your website and apps
+
+- **Websites** — any site: WordPress, Shopify custom apps, Next.js, Laravel, or your own code.
+- **Mobile apps** — iOS and Android apps, using the phone's secure browser sheet.
+- **Standard technology** — it's OpenID Connect, the same standard behind “Sign in with Google”, so
+  your developer can use the libraries they already know.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Set it up" icon="gear" href="/sign-in-with-whatsapp/set-up">
+    Register your website or app in Settings.
+  </Card>
+  <Card title="What customers see" icon="user" href="/sign-in-with-whatsapp/customer-experience">
+    The sign-in steps, consent and “Continue as”.
+  </Card>
+  <Card title="Developer guide" icon="code" href="/sign-in-with-whatsapp/developer-guide">
+    Add the button and handle the sign-in.
+  </Card>
+  <Card title="Security, limits & FAQ" icon="shield-check" href="/sign-in-with-whatsapp/security-and-limits">
+    How abuse is blocked, limits, and troubleshooting.
+  </Card>
+</CardGroup>
