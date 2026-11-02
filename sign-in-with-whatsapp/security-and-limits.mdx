@@ -1,0 +1,91 @@
+---
+title: "Security, limits & FAQ"
+description: "How Sign in with WhatsApp blocks abuse, the limits that apply, and answers to common questions."
+---
+
+Every sign-in code is a real WhatsApp message that Meta charges to your account. A public sign-in page that
+sends messages to any number is an attractive target, so StoreTalk applies several layers of protection
+before any code is sent.
+
+## Protections
+
+| Protection | What it does |
+|------------|--------------|
+| **Bot check** | A Cloudflare check on the number step, usually invisible to real people. |
+| **Per-number limits** | Stops one number being flooded with codes. |
+| **Per-connection limits** | Stops one device or network requesting codes for many numbers. |
+| **Daily limit per website** | Your *Codes per day* setting. Once reached, new codes wait until the next day (UTC). |
+| **Daily limit per business** | All your websites together can send at most 5× your largest *Codes per day*. |
+| **Allowed countries** | Numbers from other countries are refused before any message is sent. |
+| **Wrong-code lockout** | Too many wrong codes pause the number for the rest of the day. |
+| **Exact redirect addresses** | Customers only return to addresses you registered; a wrong address shows an error instead of redirecting. |
+| **PKCE on every sign-in** | A one-time check that stops an intercepted code from being used by anyone else. |
+| **Single-use codes** | Sign-in codes expire after 5 minutes; the code your website exchanges expires after 60 seconds. |
+
+## Limits
+
+| Limit | Value |
+|-------|-------|
+| Codes per number | 3 per hour, 10 per day |
+| Codes per connection (IP address) | 10 per hour, 30 per day |
+| Codes per website | Your *Codes per day* setting (default 200, up to 5,000) |
+| Codes per business | 5 × your largest *Codes per day* |
+| Wrong codes per number | 5 per code; 15 per day before the number is paused until the next day (UTC) |
+| Code lifetime | 5 minutes |
+| Resend | After 30 seconds |
+| *Continue as* | Your *Stay signed in* setting (default 30 days, up to 90), extended on each use |
+
+When a limit is hit, the customer sees *“Too many code requests. Please wait a while and try again.”* The
+**Blocked** count in Settings shows how often this happens.
+
+## Your data and your customers' data
+
+- Codes are stored only as a one-way fingerprint and deleted once used or expired.
+- Your website receives only what the customer agreed to share.
+- The sign-in ID (`sub`) is different for every business, so two businesses can't match up a customer by it.
+- Each customer is added to your Contacts by their WhatsApp number. Signing in never subscribes anyone to
+  marketing or changes an opt-out.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Why does my business need its own WhatsApp Business account?">
+    The code has to come from a number your customers recognise as yours, and Meta bills those messages to
+    the account that sends them. Using the shared StoreTalk number would show StoreTalk instead of your
+    business. Connect your own account in **Settings → WhatsApp**.
+  </Accordion>
+  <Accordion title="Does StoreTalk charge for each sign-in?">
+    No. Meta charges your WhatsApp account its authentication-message rate for each code. Customers who use
+    *Continue as* don't get a code, so those sign-ins are free.
+  </Accordion>
+  <Accordion title="Customers say they didn't get a code">
+    Check that:
+    - Settings shows **Ready — codes are sent from your WhatsApp number** (not *Waiting for Meta*).
+    - Your WhatsApp connection in **Settings → WhatsApp** is healthy.
+    - The customer entered the right country code and the number uses WhatsApp.
+    - You haven't reached your **Codes per day** limit (see **Blocked** in usage).
+  </Accordion>
+  <Accordion title="My website shows “Suspended”">
+    Your own WhatsApp Business account isn't connected, or your plan isn't active. Fix that and the website
+    resumes automatically on the next sign-in.
+  </Accordion>
+  <Accordion title="Customers see “This website isn't registered for Sign in with WhatsApp”">
+    The client ID or the redirect address your website sends doesn't match Settings. Redirect addresses must
+    match exactly — including `https`, `www`, and the path.
+  </Accordion>
+  <Accordion title="Can customers from other countries sign in?">
+    Only if you add their country's calling code (e.g. `44` for the UK) under **Countries** for that website.
+    International authentication messages cost more, so add only the countries you need.
+  </Accordion>
+  <Accordion title="I lost the client secret">
+    Click **New secret** on the website in Settings and update your website. The old secret keeps working for
+    24 hours.
+  </Accordion>
+  <Accordion title="Can I use it in my iOS or Android app?">
+    Yes — add a **Browser or mobile app** client. See [Mobile apps](/sign-in-with-whatsapp/developer-guide#mobile-apps).
+  </Accordion>
+  <Accordion title="A customer changed their phone number">
+    A new number is a new sign-in. Ask the customer to sign in with the new number, then link it to their
+    existing account on your side (for example after they confirm their old details).
+  </Accordion>
+</AccordionGroup>
